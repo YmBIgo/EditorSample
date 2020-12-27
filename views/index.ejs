@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>CodeMirrorでテキストフィールドを拡張する - Qiita</title>
+	<meta content="width=device-width,initial-scale=1,shrink-to-fit=no,viewport-fit=cover" name="viewport" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.css">
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.js"></script> -->
+	<script src="files/js/jquery.min.js"></script>
+	<script src="files/js/codemirror.js"></script>
+	<!-- 言語に応じたjsファイルを読み込む -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/mode/javascript/javascript.min.js"></script>
+	<!-- diff lib js -->
+	<script src="files/js/difflib.js"></script>
+	<script src="files/js/gitdiff.js"></script>
+	<script src="files/js/file_tabs.js"></script>
+	<script src="files/js/filelist.js"></script>
+	<script src="files/js/get_url.js"></script>
+	<link rel="stylesheet" href="files/css/style.css">
+	<!-- <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/> -->
+</head>
+<body>
+	<h3>Editor</h3>
+	<div class="file-editor-section">
+		<div class="file-editor-folder-section">
+			<h4 style="margin:10px">Folers</h4>
+			<div id="file-editor-folder-inner-section">
+			</div>
+		</div>
+		<div class="file-editor-content-section">
+		<div id="file-editor-title">
+			<div style="width:5%;float:left;margin-top:10px">
+				　[ ]
+			</div>
+			<div id="file-editor-title-inner" style="width:95%;float:right;">
+			</div>
+		</div>
+		<div style="border:1px solid rgba(170, 170, 170, .7);clear:both;">
+<textarea id="file-editor" rows="100" cols="100">
+</textarea>
+		</div>
+		</div>
+	</div>
+	<br style="clear:both;">
+	<hr style="margin-top:30px">
+	<h3 style="margin-left:40%;">Index</h3>
+<script>
+
+// file editor
+// file folder section
+var files_array = <%- JSON.stringify(files) %>;
+var files_indexed = <%- JSON.stringify(files_indexed) %>
+console.log(files_array);
+c_index = draw_filelist(files_array, files_indexed);
+// file inner section
+var fileEditor = CodeMirror.fromTextArea(document.getElementById('file-editor'), {
+    mode: "javascript",
+    lineNumbers: true,
+    indentUnit: 4
+});
+fileEditor.setSize(null, 600);
+
+</script>
+</body>
+</html>
