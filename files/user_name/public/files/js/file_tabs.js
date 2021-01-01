@@ -61,9 +61,8 @@ class Tabs {
 		var tab_width   = 630 / tab_length;
 		tab_width      -= 30;
 		var tab_width_percent = tab_width < 300 ? tab_width : 300; // 計算量少なくする
-		var tab_width_percent = tab_width_percent < 90 ?  90 : tab_width_percent;
+		var tab_width_percent = tab_width < 90 ?  90 : tab_width;
 		var focused_file = this.focus_file;
-		this.remove_tab_name_dialog();
 		this.remove_all_child();
 		this.tab_array.forEach( function(item, index) {
 			var tab_file_array = item.split("/");
@@ -75,12 +74,6 @@ class Tabs {
 			var tab_delete_href  = "<a href='javascript:tabs.remove_tab(" + index + ")' style=\"float:right;\">×<a/>"
 			div_ele.innerHTML    = tab_svg_href + tab_delete_href + "<br>" + tab_display_href;
 			div_ele.style.width  = tab_width_percent + "px";
-			div_ele.addEventListener("mouseover", () => {
-				tabs.gen_tab_name_dialog(index, tab_width_percent);
-			}, false);
-			div_ele.addEventListener("mouseleave", () => {
-				tabs.remove_tab_name_dialog();
-			}, false);
 			if (index == focused_file) { div_ele.classList.add("focus-file") }
 			tab_section.appendChild(div_ele);
 		} );
@@ -138,28 +131,5 @@ class Tabs {
 			fileEditor.setValue("");
 		})
 	}
-
-	gen_tab_name_dialog(index, tab_length){
-		// 
-		var tab_dialog = document.getElementsByClassName("file_name_dialog");
-		if (tab_dialog.length > 0){ return }
-		var new_node = document.createElement("div");
-		new_node.classList.add("file_name_dialog");
-		var tab_margin_length = (tab_length+32) * index + 10;
-		console.log(tab_margin_length);
-		new_node.style.marginLeft = tab_margin_length + "px";
-		new_node.innerText = this.tab_array[index];
-		var tab_node = document.getElementsByClassName("focus-file")[0];
-		var tabs_header = document.getElementById("file-editor-title-inner");
-		tabs_header.insertBefore(new_node, tab_node);
-	}
-
-	remove_tab_name_dialog(){
-		console.log("removing diaglog...");
-		var tab_dialog = document.getElementsByClassName("file_name_dialog");
-		for(var i = 0; i < tab_dialog.length; i++){
-			tab_dialog[i].remove();
-		}
-	}
-
 }
+

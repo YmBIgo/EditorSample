@@ -53,9 +53,10 @@ function search_child (array, path, current_id, parent_id, file_bool){
 		file_content_path = "/file?filename=" + path + "&filenumber=" + parent_id;
 		$.getJSON(file_content_path, function(json){
 			fileEditor.setValue(json["file_content"]);
+		}).then(function(){
+			// document.getElementById("file-editor-title").innerText = path;
+			tabs.add_tab(current_id, parent_id);
 		});
-		// document.getElementById("file-editor-title").innerText = path;
-		tabs.add_tab(current_id, parent_id);
 	}
 }
 
@@ -132,3 +133,7 @@ function gen_new_file(){
 	fileEditor.setValue("");
 	tabs.add_blank_tag();
 }
+
+// setTimeout(function(){
+// 	update_file_content_every_minute(fileEditor, tabs, "");
+// }, 5000);
