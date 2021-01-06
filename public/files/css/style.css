@@ -22,6 +22,7 @@
 /*  */
 .file-editor-section{
 	width:1000px;
+	/*position:relative;*/
 }
 .file-editor-folder-section{
 	width:24%;
@@ -41,14 +42,26 @@
 }
 .file_tab{
 	display:inline-block;
+	background-color:white;
 	border:1px solid rgba(170, 170, 170, .7);
 	padding:5px 10px;
 	margin-left:10px;
 	height:35px;
 	font-size:10px;
+	border-radius:7px;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	overflow: hidden;
+}
+.side_file_tab{
+	display:inline-block;
+	background-color:white;
+	border:1px solid rgba(170, 170, 170, .7);
+	height: 35px;
+	/*width: 10px;*/
+	border-radius:7px;
+	margin-top:12px;
+	padding: 5px 0;
 }
 .file_name_dialog{
 	background-color:rgba(10, 10, 10, .8);
@@ -78,7 +91,7 @@
 	font-size:7px;
 }
 .focus-file{
-	background-color:rgba(170, 170, 170, .3);
+	background-color:rgba(230, 230, 230, 1);
 }
 .shown-file:hover{
 	background-color:rgba(170, 170, 170, .3);

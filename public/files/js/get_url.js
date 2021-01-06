@@ -3,7 +3,7 @@ function update_tab_editor_data(editor, tabs, result_=""){
 	// @ Should confirm tab to be alway correct.
 	// 
 	var tab_position 	= tabs.focus_file;
-	var file_path		= tabs.tab_array[tab_position];
+	var file_path		= tabs.tab_array_main[tab_position];
 	if ( tabs.tab_array.length == 0 ) { console.log("Tab not found."); return; }
 	var editor_content	= editor.getValue();
 	var editor_json		= {'file_path':file_path, 'file_content':editor_content};

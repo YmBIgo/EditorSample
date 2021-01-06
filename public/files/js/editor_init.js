@@ -15,7 +15,7 @@ function initialize_editor(files_array, files_index) {
 		// 	update_file_content_every_minute(cm, tabs, "");
 		// }
 		console.log(tabs.tab_array[tabs.focus_file]);
-		console.log(cm.getValue().slice(0, 100));
+		// console.log(cm.getValue().slice(0, 100));
 	});
 	return fileEditor;
 }
