@@ -235,7 +235,7 @@ class Tabs {
 			// var tab_file_name  = tab_file_array[tab_file_array.length-1];
 			tabs.display_side_tab_content_inner(index, 0, 314, tab_width, tab_section);
 		});
-		this.tab_array_right.reverse().forEach(function(item, index){
+		this.tab_array_right.forEach(function(item, index){
 			// 
 			var tab_right_location = 860 + tabs.tab_array_left.length * 10;
 			tabs.display_side_tab_content_inner(index, 1, tab_right_location, tab_width, tab_section);
@@ -473,21 +473,28 @@ class Tabs {
 			this.tab_is_writing = -1;
 			var whole_array_pos  = this.tab_array_left.length + this.focus_file;
 			var current_tab_name = this.tab_array_main[this.focus_file];
+			if ( this.tab_writing_count_array[current_tab_name] > 0 ){
+				update_tab_editor_data(fileEditor, this, this.focus_file, "", true);
+			}
 			console.log("whole array length ", whole_array_pos, " / current array pos ", current_tab_name);
 			if (side == 0) { 
-				 var left_main_array = this.tab_array_left.slice(index, index + 5);
+				 // var left_main_array = this.tab_array_left.slice(index, index + 5);
 				 var main_pos =  5 - (this.tab_array_left.length - index);
-				 var main_main_array = this.tab_array_main.slice(0, main_pos);
-				var main_array 		= [...left_main_array, ...main_main_array];
-				var left_array 		= this.tab_array_left.slice(0, index);
-				 var main_right_array = this.tab_array_main.slice(main_pos);
-				var right_array 	= [...main_right_array, ...this.tab_array_right];
+				console.log("left ", main_pos);
+				 // var main_main_array = this.tab_array_main.slice(0, main_pos);
+				 var main_array = this.tab_array.slice(index, index + 5);
+				 // var main_array 		= [...left_main_array, ...main_main_array];
+				var left_array 		= this.tab_array.slice(0, index); // tab_array_left ?
+				 // var main_right_array = this.tab_array_main.slice(main_pos);
+				 var main_right_array_from_origin = this.tab_array.slice(index + 5);
+				 var right_array 	= main_right_array_from_origin;
+				// var right_array 	= [...main_right_array, ...this.tab_array_right];
 				this.tab_array_main = main_array; this.tab_array_left = left_array; this.tab_array_right = right_array;
 				console.log(left_array, main_array, right_array);
 				// focus file の変更
 			} else if (side == 1) {
 				 var main_pos = 5 - index - 1;
-				 console.log(main_pos);
+				 console.log("right ", main_pos);
 				 if ( main_pos > 1 ) {
 				 	 var right_main_array = this.tab_array_right.slice(0, index + 1);
 				 	 var main_main_array  = this.tab_array_main.slice(-main_pos);
@@ -521,6 +528,7 @@ class Tabs {
 				this.focus_file = 0;
 				this.display_tab_content(0);
 			}
+			update_tab_editor_data(fileEditor, this, this.focus_file, "", true);
 			this.display_tabs();
 		});
 	}
