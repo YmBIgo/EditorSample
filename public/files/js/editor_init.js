@@ -15,6 +15,9 @@ function initialize_editor(files_array, files_index) {
 		// 	update_file_content_every_minute(cm, tabs, "");
 		// }
 		console.log(tabs.tab_array[tabs.focus_file]);
+		tabs.detect_file_status();
+		// impl function to toggle delete_button and update button
+		// 
 		// console.log(cm.getValue().slice(0, 100));
 	});
 	return fileEditor;

@@ -50,11 +50,38 @@ function search_child (array, path, current_id, parent_id, file_bool){
 		//   - get file content
 		//   - create file
 		//	 - get path
+		//
+		// update previous(current) tab content
+		var is_temp_file = true;
+		update_tab_editor_data(fileEditor, tabs, tabs.focus_file, "", false, "");
 		file_content_path = "/file?filename=" + path + "&filenumber=" + parent_id;
+		var is_new_tab = false;
+		// check for writing file...
+		// quite a bit ugly codes ...
+		var tab_file_name     = get_fullpath(files_array, current_id);
+		var is_tab_file_exist = tabs.tab_array_main.indexOf(tab_file_name);
+		if ( is_tab_file_exist == -1 ) {
+			tabs.focus_file += (tabs.tab_array_main.length > 0) ? 1 : 0;
+			tabs.tab_array_main.push(tab_file_name);
+			is_new_tab = true;
+		}
+		tabs.tab_is_writing = -1;
+		tabs.tab_writing_count_array[tab_file_name]   = 0;
+		tabs.tab_writing_updated_array[tab_file_name] = 1;
 		$.getJSON(file_content_path, function(json){
 			fileEditor.setValue(json["file_content"]);
-		}).then(function(){
-			// document.getElementById("file-editor-title").innerText = path;
+		})
+		// new Promise((resolve, reject) => {
+		// 	tabs.show_tab_data_by_count(tab_file_name);
+		// 	resolve();
+		// })
+		.then(function(){
+			// return to the original array.
+			// quite a bit ugly codes ...
+			if ( is_new_tab == true ) {
+				var tab_main_len = tabs.tab_array_main.length - 1;
+				tabs.tab_array_main = tabs.tab_array_main.slice(0, tab_main_len);
+			}
 			tabs.add_tab(current_id, parent_id);
 		});
 	}
