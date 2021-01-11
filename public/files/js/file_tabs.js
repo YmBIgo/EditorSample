@@ -404,6 +404,7 @@ class Tabs {
 			// 主に new_file の場合 
 			console.log("error");
 			fileEditor.setValue("");
+			return false
 		});
 	}
 
@@ -619,6 +620,7 @@ class Tabs {
 							var modal_target_class = event.target.classList;
 							if ( modal_target_class[0] == "modalBg" ) {
 								$('#modalArea').fadeOut();
+								document.getElementsByClassName("modal_div_section")[0].remove();
 							}
 						});
 					});
@@ -635,7 +637,7 @@ class Tabs {
 			// element の event 削除 & delete 追加
 			var new_element = element.cloneNode(true);
 			element.parentNode.replaceChild(new_element, element);
-			tabs.on_mouseclick_delete_button(new_element)
+			tabs.on_mouseclick_delete_button(new_element);
 			new_element.innerText = "×";
 			tabs.tab_is_writing = tabs.focus_file;
 		})

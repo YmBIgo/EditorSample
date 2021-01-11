@@ -2,19 +2,24 @@
 	<div id="modalBg" class="modalBg">
 		<div class="modalrWapper">
 			<div class="modalContents">
-				<h4>ファイル保存する</h4>
+				<h4 class="modalTitle">ファイル保存する</h4>
 				<hr>
 				<div id="modalFolders">
 				</div>
-				<p class="modalText">
-					フォルダ名　<input type="input" name="folderName" class="form-control modalInput">
-				</p>
-				<p class="modalText">
-					ファイル名　<input type="input" name="fileName" class="form-control modalInput">
-				</p>
-				<p class="modalText">
-					<input type="submit" class="btn btn-submit">
-				</p>
+				<form id="modal-blank-tab-form" class="form_save_blank_tab">
+					<p class="modalText">
+						フォルダ名　<input type="input" name="folderName" class="form-control modalInput modalFolderInput" placeholder="フォルダを指定して下さい">
+					</p>
+					<p class="modalText">
+						ファイル名　<input type="input" name="fileName" class="form-control modalInput modalFileInput" placeholder="ファイル名を入力して下さい">
+					</p>
+					<div class="modalHidden">
+						<input type="hidden" name="hidden_fileIndex" class="modalFileIndex" >
+					</div>
+					<p class="modalText">
+						<input type="submit" id="modal_send_button" class="btn btn-submit">
+					</p>
+				</form>
 			</div>
 		</div>
 	</div>
@@ -27,59 +32,147 @@
 function draw_modal_file_list(file_array){
 	// 
 	var modal_file_section = document.getElementById("modalFolders");
+	file_array = file_array.filter(item => item[3] == 0);
 	file_array.forEach( function(item, index){
-		if ( item[3] == 0 ) {
-			console.log("Append ", item[0], " ...");
-			var l_li = document.createElement("p");
-			l_blank = "　".repeat(item[2]);
-			l_image = "<img src='files/image/Font_Awesome_5_regular_folder.svg' style='height:10px'> "
-			l_li.innerHTML = l_blank + l_image + item[0];
-			l_li.setAttribute("index", item[1]);
-			l_li.setAttribute("depth", item[2]);
-			l_li.setAttribute("file", item[3]);
-			l_li.setAttribute("number", item[4]);
-			l_li.setAttribute("parent", item[5]);
-			l_li.setAttribute("folder_index", index);
-			l_li.onclick = function(){
-				search_modal_file_list(file_array, item[4]);
-			}
-			if ( item[2] == 1 ) {
-				l_li.classList.add("shown-file");
-			} else {
-				l_li.classList.add("hidden-file");
-			}
-			modal_file_section.append(l_li);
+		var l_li = document.createElement("p");
+		l_blank = "　".repeat(item[2]);
+		l_image = "<img src='files/image/Font_Awesome_5_regular_folder.svg' style='height:10px'> "
+		l_li.innerHTML = l_blank + l_image + item[0];
+		l_li.setAttribute("index", item[1]);
+		l_li.setAttribute("depth", item[2]);
+		l_li.setAttribute("file", item[3]);
+		l_li.setAttribute("number", item[4]);
+		l_li.setAttribute("parent", item[5]);
+		var file_modal_name = "folder-" + item[4];
+		l_li.classList.add(file_modal_name);
+		l_li.onclick = function(){
+			search_modal_filelist(file_array, item[4]);
 		}
+		if ( item[2] == 1 ) {
+			l_li.classList.add("shown-file");
+		} else {
+			l_li.classList.add("hidden-file");
+		}
+		modal_file_section.append(l_li);
 	})
 }
 
-function search_modal_file_list(file_array, file_index){
+function search_modal_filelist(file_array, file_index){
 	// 
 	console.log("Searching ", file_index, " in modal section.")
 	var modal_file_section = document.getElementById("modalFolders");
 	var modal_files_p 	   = modal_file_section.getElementsByTagName("p");
+	var current_file_class = "folder-" + file_index;
+	var current_file_p	   = modal_file_section.getElementsByClassName(current_file_class)[0];
 	for ( var i = 0; i < modal_files_p.length; i++ ) {
 		if ( parseInt(modal_files_p[i].getAttribute("parent")) == file_index ) {
-			console.log(parseInt(modal_files_p[i].getAttribute("parent")));
 			modal_files_p[i].classList.add("shown-file");
 			modal_files_p[i].classList.remove("hidden-file");
-			// hidden も 追加 hoge
-			modal_files_p[i].onclick = function(){
-				hide_child_modal_file_list(file_array, i, modal_files_p)
-			}
 		}
 	};
+	// hidden も 追加 hoge
+	current_file_p.onclick = "";
+	current_file_p.onclick = function(){
+		hide_child_modal_filelist(file_array, file_index, modal_file_section);
+	}
+	document.getElementsByClassName("modalFolderInput")[0].value = get_fullpath(files_array, file_index);
+	document.getElementsByClassName("modalFileIndex")[0].value = file_index;
 }
 
-function hide_child_modal_file_list(file_array, file_index, file_p){
+function hide_child_modal_filelist(file_array, file_index, file_p){
 	// 
-	var hide_files = file_array.filter(item => item[5] == file_index);
-	// 
+	console.log("Hiding ", file_index, " in modal section")
+	var current_class_name = "folder-" + file_index;
+	var current_ele  = file_p.getElementsByClassName(current_class_name)[0];
+	hide_all_children_modal_filelist(file_array, file_index, file_p, current_ele);
+	current_ele.onclick = "";
+	current_ele.onclick = function() {
+		search_modal_filelist(file_array, file_index);
+	}
 }
 
-function hide_all_children_filelist(file_array, current_id, e_p){
+function hide_all_children_modal_filelist(file_array, file_index, file_p, current_ele){
 	// 
+	var current_file = file_array.filter(item => item[4] == file_index)[0];
+	if ( current_file[3] == 0 ){
+		var child_file = file_array.filter(item => item[5] == current_file[4]);
+		for ( var i = 0; i < child_file.length; i++ ){
+			if ( child_file[i][3] == 0 ) {
+				hide_child_modal_filelist(file_array, child_file[i][4], file_p);
+			}
+			var child_id  = child_file[i][4];
+			var child_class_name = "folder-" + child_id;
+			var child_ele = file_p.getElementsByClassName(child_class_name)[0];
+			child_ele.classList.remove("shown-file");
+			child_ele.classList.add("hidden-file");
+		}
+	}
+}
+
+function fail_to_save(modal_title){
+	console.log("Different Folder Name. Failed ...");
+	modal_title.innerHTML = "ファイル保存する　<span style='color:red;font-size:9px;'>保存に失敗しました...</span>"
 }
 
 draw_modal_file_list(files_array);
+
+$('#modal_send_button').click(function(e){
+	e.preventDefault();
+	var modal_title = document.getElementsByClassName("modalTitle")[0];
+	var folder_name = document.getElementsByName("folderName")[0].value;
+	var file_name 	= document.getElementsByName("fileName")[0].value;
+	var whole_file_path = folder_name + "/" + file_name;
+	var file_index	= parseInt(document.getElementsByName("hidden_fileIndex")[0].value);
+	console.log(folder_name, file_name, file_index);
+	var file_full_path = get_fullpath(files_array, file_index);
+	// 新規フォルダも、作成可能にする
+	if ( file_full_path != folder_name || file_name == "" ) {
+		// settimeout で何秒後化に、戻す？
+		fail_to_save(modal_title);
+	} else {
+		console.log(file_full_path, "is enable to save.");
+		modal_title.innerHTML = "ファイル保存する";
+		var focus_file_name   = tabs.tab_array_main[tabs.focus_file];
+		var tab_file_path = tabs.set_file_content(tabs.focus_file, focus_file_name, 1, false, true);
+		$.getJSON(tab_file_path, function(json){
+			tabs.tab_content_stack = json["file_content"];
+		})
+		.error(function(jpXHR, textStatus, errorThrown){
+			console.log("error");
+		})
+		.then(function(){
+			var modal_tab_content = tabs.tab_content_stack;
+			console.log(modal_tab_content.slice(0, 100));
+			if ( modal_tab_content == false ) { fail_to_save(modal_title); return; }
+			// 
+			delete tabs.tab_writing_count_array[focus_file_name];
+			delete tabs.tab_writing_updated_array[focus_file_name];
+			// tab_is_writing_array が心配...
+			tabs.tab_writing_count_array[whole_file_path] = 0;
+			tabs.tab_writing_updated_array[whole_file_path] = 1;
+			tabs.tab_is_writing_array.push(whole_file_path);
+			//
+			var current_file_tab = document.getElementsByClassName("file_tab")[tabs.focus_file];
+			var new_current_file_tab = current_file_tab.cloneNode(true);
+			current_file_tab.parentNode.replaceChild(new_current_file_tab, current_file_tab);
+			console.log(new_current_file_tab);
+			// 
+			var current_delete_button = document.getElementsByClassName("tab_delete_button")[tabs.focus_file];
+			tabs.on_mouseclick_delete_button(current_delete_button);
+			current_delete_button.innerText = "×";
+			//
+			new_current_file_tab.getElementsByClassName("tab_file_name")[0].innerText = file_name;
+			tabs.tab_is_writing = tabs.focus_file;
+			tabs.tab_array_main[tabs.focus_file] = whole_file_path;
+			var new_tab_pos = tabs.tab_array_left.length + tabs.focus_file;
+			tabs.tab_array[new_tab_pos] = whole_file_path;
+			// 重複確認...
+			update_tab_editor_data(files_array, tabs, tabs.focus_file, "", false, modal_tab_content);
+			// files_array も追加か？
+			// その他、変更箇所 はあるか？
+			document.getElementsByClassName("modal_div_section")[0].remove();
+		});
+	}
+})
+
 </script>

@@ -100,8 +100,7 @@ function hide_filelist(array, current_id){
 	// 
 	var editor_file = document.getElementById("file-editor-folder-inner-section");
 	var editor_p = editor_file.getElementsByTagName("p");
-	var hide_files  = array.filter( item => ( item[5] == current_id ) );
-	console.log(hide_files);
+	// var hide_files  = array.filter( item => ( item[5] == current_id ) );
 	// hide_files.forEach( function(item) {
 	// 	var i = item[4]-1;
 	// 	editor_p[i].classList.remove("shown-file");
