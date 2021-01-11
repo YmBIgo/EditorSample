@@ -1,0 +1,263 @@
+<!DOCTYPE HTML>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<title>SampleSlide</title>
+  <link rel="stylesheet" type="text/css" href="./css/base.css" />
+  <link rel="stylesheet" type="text/css" href="./css/prettify.css" />
+  <script type="text/javascript" src="./js/lib/jquery-1.5.1.min.js"></script>
+  <script type="text/javascript" src="./js/lib/prettify.js"></script>
+  <script type="text/javascript" src="./js/lib/text-hatena0-2.js"></script>
+  <script type="text/javascript" src="./js/lib/textile.js"></script>
+  <script type="text/javascript" src="./js/kyubey.js"></script>
+  <script type="text/javascript">
+    $(function(){
+      // $.kyubey({animation: "slideDown"});
+      $.kyubey({animation: "fadeIn"});
+    });
+  </script>
+</head>
+<body>
+  <div id="wrapper">
+    <section>
+    <h2>小さなスライドツールを作りました</h2>
+    <p>右矢印キー(→)で次のページへ</p>
+    </section>
+
+    <section>
+    <h1>
+      <span class="aa" style="">( <span style="color:red">◕</span> ‿‿ <span style="color:red">◕</span> )</span>
+      kyubey
+    </h1>
+    <h2 class="lazy">HTML/CSS/JS製の小さなスライドツール</h2>
+    </section>
+
+    <section>
+    	<h1>kyubey?</h1>
+      <h2>スライド → プレゼン → 起業 → 契約 → QB</h2>
+    	<p>※incubator: 起業に関する支援を行う者</p>
+    </section>
+
+    <section>
+    <h1 class="em">feature</h1>
+    </section>
+
+    <section>
+    <h1>key bind</h1>
+    <h2>Prev(←), Next(→), First(↑), Last(↓)</h2>
+<pre class="prettyprint lang-js linenums"
+>function bindKey() {
+  $(window).keyup(function(e){
+    if(e.keyCode==37) {         // ←
+      goPrev();
+    } else if(e.keyCode==38) {  // ↑
+      goFirst();
+    } else if(e.keyCode==39) {  // →
+      goNext();
+    } else if(e.keyCode==40) {  // ↓
+      goLast();
+    }
+  });
+};
+</pre>
+    </section>
+
+    <section>
+    	<h1>page number</h1>
+      <h2>look at lower right</h2>
+<pre class="prettyprint lang-js linenums"
+>function paging() {
+  var pageNum = $("section").length;
+  var i = 1;
+  $("section").each(function(){
+    if ($(this).is(".current")) {
+      return false; // break
+    } else {
+      i++;
+    }
+  });
+  $("#page").text(i + " / " + pageNum);
+};
+</pre>
+    </section>
+
+    <section>
+    	<h1>animation</h1>
+      <h2>thanks to jQuery animation</h2>
+<pre class="prettyprint lang-js linenums"
+>function show(jObj) {
+  $("section:visible").removeClass("current").hide();
+  if (config.animation == "fadeIn") {
+    jObj.fadeIn();
+  } else if (config.animation == "slideDown") {
+    jObj.slideDown();
+  }
+  jObj.css("display", "block")
+      .addClass("current");
+  paging();
+};
+</pre>
+    </section>
+
+    <section>
+    <h1>syntax highlight</h1>
+    <h2>thanks to  google-code-prettify</h2>
+<pre class="prettyprint lang-ruby linenums"
+>def fizzbuzz(n)
+  (1..n).each do |i|
+    s = ""
+    s += "fizz" if i % 3 == 0
+    s += "buzz" if i % 5 == 0
+    s = i if s == ""
+    puts s
+  end
+end
+
+fizzbuzz(100)
+</pre>
+    </section>
+
+    <section>
+    <div class="hatena">
+* Hatena
+class="hatena"の中に書いたはてな記法が変換されます
+    </div>
+<pre class="prettyprint linenums lang-html">
+&lt;div class="hatena"&gt;
+* Hatena
+class="hatena"の中に書いたはてな記法が変換されます
+&lt;/div&gt;
+
+ ↓
+
+&lt;div class="hatena"&gt;
+  &lt;div class="section"&gt;
+    &lt;h1&gt;はてな記法&lt;/h1&gt;
+    &lt;p&gt;class="hatena"の中にはてな記法で書くと変換されます&lt;p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+    </section>
+
+    <section>
+    <div class="textile">
+h1. textile
++class="textile"の中に書いたtextile記法が変換されます+
+    </div>
+<pre class="prettyprint linenums lang-html">
+&lt;div class="textile"&gt;
+h1. textile
++class="textile"の中に書いたtextile記法が変換されます+
+&lt;/div&gt;
+
+ ↓
+
+&lt;div class="textile"&gt;
+  &lt;div class="section"&gt;
+    &lt;h1&gt;textile記法&lt;/h1&gt;
+    &lt;p&gt;
+      &lt;ins style="text-align:center;"&gt;
+        class="textile"の中に書いたtextile記法が変換されます
+      &lt;/ins&gt;
+    &lt;p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+    </section>
+
+    <div class="hatenaFull">
+* Full(1/2)
+class="textileFull"/"hatenaFull"クラスを利用すれば、
+h1の見出しごとに自動でsectionを分けることもできます
+
+* Full(2/2)
+こんな感じにね。
+(1つのdiv.textileFull内にh1要素を2つ記述しています)
+    </div>
+
+    <section>
+    <h1 class="em">Usage</h1>
+    </section>
+
+    <section>
+    <h1>1. include js&css</h1>
+<pre class="prettyprint lang-html linenums"
+>&lt;link rel="stylesheet" type="text/css" href="./css/base.css" />
+&lt;link rel="stylesheet" type="text/css" href="./css/prettify.css" /&gt;
+&lt;script type="text/javascript" src="./js/lib/jquery-1.5.1.min.js"&gt;&lt;/script>
+&lt;script type="text/javascript" src="./js/lib/prettify.js"&gt;&lt;/script>
+&lt;script type="text/javascript" src="./js/kyubey.js"&gt;&lt;/script>
+</pre>
+    </section>
+
+    <section>
+    <h1>2. call kyubey</h1>
+<pre class="prettyprint lang-html linenums"
+>&lt;script type="text/javascript"&gt;
+  $(function(){
+    $.kyubey();
+  });
+&lt;/script&gt;
+</pre>
+    </section>
+
+    <section>
+    	<h1>3. write a html</h1>
+<pre class="prettyprint lang-html linenums"
+>&lt;section&gt;
+  &lt;h1&gt;This Just Isn't Right&lt;/h1&gt;
+  &lt;h2&gt;Konna no Zettai Okashiiyo&lt;/h2&gt;
+  &lt;p&gt;
+    Homura knocks Sayaka unconsciousand gets Kyōko to leave,
+    before reiterating to Madoka that she not get involved...
+  &lt;/p&gt;
+&lt;/section&gt;
+</pre>
+    </section>
+
+    <section>
+    	<h1 class="em">fabrication cost</h1>
+    </section>
+
+    <section>
+    	<h1>codes</h1>
+      	<p>CSS: 20 lines</p>
+      	<p>JavaScript: 84 lines</p>
+      	<p>HTML(thisSlides): 204 lines</p>
+    </section>
+
+    <section>
+    	<h1>files</h1>
+<pre style="width: 500px; margin:0 auto; text-align: left;"
+>kyubey
+|-- css
+|   |-- base.css
+|   `-- prettify.css
+|-- js
+|   |-- kyubey.js
+|   |-- lang-css.js
+|   |-- lib
+|   |   `-- jquery-1.5.1.min.js
+|   `-- prettify.js
+`-- sample.html
+
+3 directories, 7 files
+</pre>
+    </section>
+
+    <section>
+    	<h1>times</h1>
+      <h2>7 hours</h2>
+    </section>
+
+    <section>
+    <h2>
+      <span class="aa" style="">( <span style="color:red">◕</span> ‿‿ <span style="color:red">◕</span> )</span>
+      thank you for reading.
+    </h2>
+    </section>
+
+    <p id="page"></p>
+  </div>
+</body>
+</html>

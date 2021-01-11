@@ -56,9 +56,8 @@ function readTempfile(file_path){
 function readFiles(file_path, file_index, file_depth, file_result, is_directory, parent_file_index=1){
 	if ( file_depth == 1 && file_index == 1 ) { index_number = 0; console.log("init index") }
 	files_array = []; indexed_file_hash = {};
-	var banned_file_array = [".git", ".gitignore"]
 	fs.readdirSync(file_path).forEach( function(file) {
-		if ( file_depth == 1 && banned_file_array.includes(file) == true ) { return; }
+		if ( file_depth == 1 && file == ".git" ) { return; }
 		if ( file_path == "./" ) {
 			if ( file == "files" || file == "temp_files" ) {
 				console.log(file); return;
@@ -79,13 +78,6 @@ function readFiles(file_path, file_index, file_depth, file_result, is_directory,
 		}
 	});
 	return [file_result, indexed_file_map];
-}
-
-// Read Modal Data
-function readModal(){
-	var modal_file_path = "public/files/html/modal.html"
-	var modal_content = fs.readFileSync(modal_file_path, 'utf-8');
-	return modal_content
 }
 
 // function to generate file
@@ -181,7 +173,6 @@ function searchToRoot(array, file_path, parent_id){
 // file_result = read_files("./", 0, 0, file_array ,0);
 module.exports.read_files 	  = readFiles;
 module.exports.read_file  	  = readFile;
-module.exports.modal_file 	  = readModal;
 // module.exports.search_to_root = searchToRoot;
 module.exports.generate_file  = generateFile;
 module.exports.generate_temp_file = generateTempFile;

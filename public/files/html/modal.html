@@ -1,0 +1,85 @@
+<section id="modalArea" class="modalArea">
+	<div id="modalBg" class="modalBg">
+		<div class="modalrWapper">
+			<div class="modalContents">
+				<h4>ファイル保存する</h4>
+				<hr>
+				<div id="modalFolders">
+				</div>
+				<p class="modalText">
+					フォルダ名　<input type="input" name="folderName" class="form-control modalInput">
+				</p>
+				<p class="modalText">
+					ファイル名　<input type="input" name="fileName" class="form-control modalInput">
+				</p>
+				<p class="modalText">
+					<input type="submit" class="btn btn-submit">
+				</p>
+			</div>
+		</div>
+	</div>
+	<div class="closeModal" class="closeModal">
+		×
+	</div>
+</section>
+
+<script>
+function draw_modal_file_list(file_array){
+	// 
+	var modal_file_section = document.getElementById("modalFolders");
+	file_array.forEach( function(item, index){
+		if ( item[3] == 0 ) {
+			console.log("Append ", item[0], " ...");
+			var l_li = document.createElement("p");
+			l_blank = "　".repeat(item[2]);
+			l_image = "<img src='files/image/Font_Awesome_5_regular_folder.svg' style='height:10px'> "
+			l_li.innerHTML = l_blank + l_image + item[0];
+			l_li.setAttribute("index", item[1]);
+			l_li.setAttribute("depth", item[2]);
+			l_li.setAttribute("file", item[3]);
+			l_li.setAttribute("number", item[4]);
+			l_li.setAttribute("parent", item[5]);
+			l_li.setAttribute("folder_index", index);
+			l_li.onclick = function(){
+				search_modal_file_list(file_array, item[4]);
+			}
+			if ( item[2] == 1 ) {
+				l_li.classList.add("shown-file");
+			} else {
+				l_li.classList.add("hidden-file");
+			}
+			modal_file_section.append(l_li);
+		}
+	})
+}
+
+function search_modal_file_list(file_array, file_index){
+	// 
+	console.log("Searching ", file_index, " in modal section.")
+	var modal_file_section = document.getElementById("modalFolders");
+	var modal_files_p 	   = modal_file_section.getElementsByTagName("p");
+	for ( var i = 0; i < modal_files_p.length; i++ ) {
+		if ( parseInt(modal_files_p[i].getAttribute("parent")) == file_index ) {
+			console.log(parseInt(modal_files_p[i].getAttribute("parent")));
+			modal_files_p[i].classList.add("shown-file");
+			modal_files_p[i].classList.remove("hidden-file");
+			// hidden も 追加 hoge
+			modal_files_p[i].onclick = function(){
+				hide_child_modal_file_list(file_array, i, modal_files_p)
+			}
+		}
+	};
+}
+
+function hide_child_modal_file_list(file_array, file_index, file_p){
+	// 
+	var hide_files = file_array.filter(item => item[5] == file_index);
+	// 
+}
+
+function hide_all_children_filelist(file_array, current_id, e_p){
+	// 
+}
+
+draw_modal_file_list(files_array);
+</script>

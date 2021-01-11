@@ -157,6 +157,7 @@ function get_fullpath(array, current_id){
 
 function gen_new_file(){
 	// 
+	fileEditor.setValue("");
 	tabs.add_blank_tag();
 }
 

@@ -53,13 +53,3 @@ app.post('/create_file', function(req, res, next){
 	var create_file_result = load_file.generate_file(file_path, file_content);
 	res.json({file_name: create_file_result});
 });
-
-// modal
-app.get("/get_modal", function(req, res, next){
-	var file_content = load_file.modal_file();
-	var html_contents = file_content.split("<script>");
-	var html_content  = html_contents[0];
-	var js_script	  = html_contents[1].replace("</script>");
-	// json ?
-	res.json({html_content: file_content, js_content: js_script});
-})

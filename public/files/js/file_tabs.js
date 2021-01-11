@@ -1,7 +1,7 @@
 // 
 // 1. position relative 関係 @ file_editor_section
 // 2. add_tab の main 分岐
-// 3. add blank tab
+// 3. add blank tab   tempfile の扱い
 // 
 class Tabs {
 	constructor(tab_array, tab_number_array=[]){
@@ -45,6 +45,18 @@ class Tabs {
 				selected_tab = this.tab_array_main.indexOf(tab_file_name);
 			} else {
 				// tab_array_main にあるかで、分岐
+				var selected_tab_is_left  = this.tab_array_left.indexOf(tab_file_name);
+				if ( selected_tab_is_left != -1 ) {
+					this.focus_file = 0;
+					this.tab_array_left  = this.tab_array.slice(0, selected_tab);
+					this.tab_array_main  = this.tab_array.slice(selected_tab, selected_tab+5);
+					this.tab_array_right = this.tab_array.slice(selected_tab+5);
+				} else {
+					var selected_tab_is_right = this.tab_array_right.indexOf(tab_file_name);
+					this.tab_array_right = this.tab_array.slice(selected_tab+1);
+					this.tab_array_main  = this.tab_array.slice(selected_tab-4, selected_tab+1);
+					this.tab_array_left  = this.tab_array.slice(0, selected_tab-4);
+				}
 			}
 		}
 		this.focus_file = this.tab_array_main.indexOf(tab_file_name);
@@ -59,13 +71,26 @@ class Tabs {
 	}
 	add_blank_tag(){
 		// 
-		// Right | Left
+		// Right | Left | Main
+		// tab_number_array
+		// tab_writing_[count/updated]_array | tab_is_writing
 		// update previous(current) tab content
 		// --- code ---
-		var blank_tab_name = this.create_new_blank_name()
-		this.tab_array.push(blank_tab_name);
-		this.display_tabs();
+		var blank_tab_name  = this.create_new_blank_name();
+		this.tab_is_writing = -1;
+		this.tab_writing_count_array[blank_tab_name]   = 0;
+		this.tab_writing_updated_array[blank_tab_name] = 1;
 		fileEditor.setValue("");
+		var new_tab_pos = this.add_tab_with_side_tab(blank_tab_name);
+		this.check_side_tab(new_tab_pos);
+		this.tab_number_array.push(-1);
+		this.tab_writing_button_array.push(blank_tab_name);
+		this.focus_file = this.tab_array_main.indexOf(blank_tab_name);
+		this.focus_file = (this.focus_file > 4) ? 4 : this.focus_file;
+		this.display_tabs();
+		update_tab_editor_data(fileEditor, this, this.focus_file, "", true);
+		// temp 保存
+		this.tab_is_writing_array.push(blank_tab_name);
 	}
 	create_new_blank_name(){
 		// new_file
@@ -356,6 +381,7 @@ class Tabs {
 			var tab_path = file_path.split("/");
 			var tab_file = tab_path[tab_path.length-1];
 			var tab_left_len  = this.tab_array_left.length;
+			// tab_parnet_id = -1 の場合、考える
 			var tab_parent_id = this.tab_number_array[tab_left_len + file_index];
 			var file_content_path = "/file?filename=" + tab_file + "&filenumber=" + tab_parent_id;
 		} else {
@@ -548,28 +574,58 @@ class Tabs {
 		element.addEventListener('click', () => {
 			var update_index_num = parseInt(element.getAttribute("index_num"));
 			var update_file_name = document.getElementsByClassName("file_tab")[update_index_num].getAttribute("file_full_path");
-			if ( update_index_num != tabs.focus_file ) {
-				console.log("update index and focus file is different.");
-				// 
-				var file_content_path = tabs.set_file_content(update_index_num, update_file_name, 1, false, true);
-				$.getJSON(file_content_path, function(json){
-					tabs.tab_content_stack = json["file_content"];
-				})
-				// .success(function(json){
-				// 	console.log(file_content.slice(0, 100));
-				// })
-				.error(function(jpXHR, textStatus, errorThrown){
-					// 主に new_file の場合 
-					console.log("error");
-					fileEditor.setValue("");
-				})
-				.then(function(){
+			var update_number_num = this.tab_number_array[update_index_num];
+			if ( update_number_num != -1 ) {
+				if ( update_index_num != tabs.focus_file ) {
+					console.log("update index and focus file is different.");
+					// 
+					var file_content_path = tabs.set_file_content(update_index_num, update_file_name, 1, false, true);
+					$.getJSON(file_content_path, function(json){
+						tabs.tab_content_stack = json["file_content"];
+					})
+					.error(function(jpXHR, textStatus, errorThrown){
+						// 主に new_file の場合 
+						console.log("error");
+						fileEditor.setValue("");
+					})
+					.then(function(){
+						update_tab_editor_data(fileEditor, tabs, update_index_num, "", false, tabs.tab_content_stack);
+					});
+				} else {
+					console.log("update index and focus file is same")
+					tabs.tab_content_stack = fileEditor.getValue();
 					update_tab_editor_data(fileEditor, tabs, update_index_num, "", false, tabs.tab_content_stack);
+				}
+			} else if (update_number_num == -1) {
+				console.log("Tab parent id is ", update_number_num);
+				// modal 表示 で return
+				// File 読み込み 後、追加
+				var file_content = ""; var script_content = "";
+				$.getJSON("/get_modal", function(json){
+					file_content = json["html_content"];
+					script_content = json["js_content"];
+				}).then(function(){
+					var modal_div = document.getElementsByClassName("modal_div_section")[0]
+					if (modal_div != undefined) { modal_div.remove(); }
+					var div_wrapper = document.createElement("div");
+					div_wrapper.classList.add("modal_div_section");
+					var modal_div_wrapper = document.getElementsByTagName("body")[0].appendChild(div_wrapper);
+					modal_div_wrapper.innerHTML = file_content;
+					// or return ...
+					$('#modalArea').fadeIn();
+					$(function (){
+						$('#modalBg').click(function(event){ // #closeModal, 
+							// コードが びみょい
+							var modal_target_class = event.target.classList;
+							if ( modal_target_class[0] == "modalBg" ) {
+								$('#modalArea').fadeOut();
+							}
+						});
+					});
+				}).then(function(){
+					eval(script_content);
 				});
-			} else {
-				console.log("update index and focus file is same")
-				tabs.tab_content_stack = fileEditor.getValue();
-				update_tab_editor_data(fileEditor, tabs, update_index_num, "", false, tabs.tab_content_stack);
+				return;
 			}
 			tabs.tab_is_writing = -1;
 			tabs.tab_writing_updated_array[update_file_name] = 1;
@@ -825,6 +881,7 @@ class Tabs {
 		var current_file_name = this.tab_array_main[this.focus_file];
 		// var is_file_writing   = this.tab_writing_button_array.indexOf(current_file_name);
 		if (this.tab_is_writing != -1) {
+			console.log("853 ", this.tab_is_writing);
 			// if ( this.tab_is_writing == 1 ) { this.tab_is_writing = 0; return false; }
 			this.tab_writing_count_array[current_file_name] += 1;
 			this.tab_writing_updated_array[current_file_name] = 0;
