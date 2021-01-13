@@ -147,16 +147,25 @@
 	margin-bottom:5px;
 	display:inline-block;
 }
-.modalInput{
-	width: 70%;
-	border-radius:3px;
-	border:0px;
-	outline:1px solid rgba(40, 40, 40, .4);
-	height:24px;
-	display:inline-block;
+
+/* Open folder */
+.open-folder-section{
+	margin-left:5%;
+	width:80%;
+	margin-top:20px;
+	padding:20px;
+	border:1px solid rgba(45, 45, 45, .5);
 }
-.modalInput:focus{
-	outline:1.7px solid rgba(135, 206, 235, .8);
+.open-folder-input{
+	margin-bottom:20px;
+	width:80%;
+}
+.folder-inner-section{
+	border:1px solid rgba(45, 45, 45, .5);
+	height:300px;
+	width:80%;
+	margin-bottom:20px;
+	padding:10px;
 }
 
 /* Common */
@@ -166,4 +175,25 @@
 	border:0.5px solid #4169e1;
 	padding:5px 20px;
 	border-radius:5px;
+}
+
+.form-control{
+	width: 70%;
+	border-radius:3px;
+	border:0px;
+	outline:1px solid rgba(40, 40, 40, .4);
+	height:24px;
+	display:inline-block;
+}
+.form-control:focus{
+	outline:1.7px solid rgba(135, 206, 235, .8);
+}
+
+#loading-image{
+	width:100px;
+	height:100px;
+	position:absolute;
+	top:44%;
+	left:47%;
+	z-index: 3000;
 }

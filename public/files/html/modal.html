@@ -134,19 +134,31 @@ $('#modal_send_button').click(function(e){
 		modal_title.innerHTML = "ファイル保存する";
 		var focus_file_name   = tabs.tab_array_main[tabs.focus_file];
 		var tab_file_path = tabs.set_file_content(tabs.focus_file, focus_file_name, 1, false, true);
+		var is_file_exist = true; // 
+		var file_check_path   = "/check_path?file_path=" + whole_file_path
 		$.getJSON(tab_file_path, function(json){
 			tabs.tab_content_stack = json["file_content"];
 		})
 		.error(function(jpXHR, textStatus, errorThrown){
-			console.log("error");
+			console.log("error getting tab content");
+		}),
+		$.getJSON(file_check_path, function(json){
+			is_file_exist = json["file_exist"];
+			console.log("checking file existance ", is_file_exist);
+		})
+		.error(function (jpXHR, textStatus, errorThrown){
+			console.log("error checking file existance")
 		})
 		.then(function(){
 			var modal_tab_content = tabs.tab_content_stack;
 			console.log(modal_tab_content.slice(0, 100));
 			if ( modal_tab_content == false ) { fail_to_save(modal_title); return; }
+			if ( is_file_exist == true ) { fail_to_save(modal_title); return; }
 			// 
 			delete tabs.tab_writing_count_array[focus_file_name];
 			delete tabs.tab_writing_updated_array[focus_file_name];
+			var tab_writing_updated_pos = tabs.tab_is_writing_array.indexOf(focus_file_name);
+			if ( tab_writing_updated_pos != -1 ) {  tabs.tab_is_writing_array.splice(tab_writing_updated_pos, 1) }
 			// tab_is_writing_array が心配...
 			tabs.tab_writing_count_array[whole_file_path] = 0;
 			tabs.tab_writing_updated_array[whole_file_path] = 1;
@@ -155,9 +167,17 @@ $('#modal_send_button').click(function(e){
 			var current_file_tab = document.getElementsByClassName("file_tab")[tabs.focus_file];
 			var new_current_file_tab = current_file_tab.cloneNode(true);
 			current_file_tab.parentNode.replaceChild(new_current_file_tab, current_file_tab);
+			// tab
 			console.log(new_current_file_tab);
-			// 
+			var tab_width = tabs.tab_pos_array[1][1] - tabs.tab_pos_array[0][1] - 32 // 
+			var tab_index = parseInt(tabs.focus_file);
+			tabs.on_mouseover_op(new_current_file_tab, tab_index, tab_width);
+			tabs.on_mouseleave_op(new_current_file_tab);
+			tabs.on_mousedown_op(new_current_file_tab, tab_index, tab_width);
+			tabs.on_mouseup_op(new_current_file_tab, tab_index);
+			// delete button
 			var current_delete_button = document.getElementsByClassName("tab_delete_button")[tabs.focus_file];
+			current_delete_button.onclick = "";
 			tabs.on_mouseclick_delete_button(current_delete_button);
 			current_delete_button.innerText = "×";
 			//
@@ -166,9 +186,10 @@ $('#modal_send_button').click(function(e){
 			tabs.tab_array_main[tabs.focus_file] = whole_file_path;
 			var new_tab_pos = tabs.tab_array_left.length + tabs.focus_file;
 			tabs.tab_array[new_tab_pos] = whole_file_path;
-			// 重複確認...
+			// file update
 			update_tab_editor_data(files_array, tabs, tabs.focus_file, "", false, modal_tab_content);
 			// files_array も追加か？
+			// サーバーから取り直すか、json 並べ替えるか？
 			// その他、変更箇所 はあるか？
 			document.getElementsByClassName("modal_div_section")[0].remove();
 		});

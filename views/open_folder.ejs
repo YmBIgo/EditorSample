@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>エディターサンプル</title>
+	<meta content="width=device-width,initial-scale=1,shrink-to-fit=no,viewport-fit=cover" name="viewport" />
+	<link rel="stylesheet" href="files/css/codemirror.min.css">
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.js"></script> -->
+	<script src="files/js/jquery.min.js"></script>
+	<script src="files/js/codemirror.js"></script>
+	<!-- 言語に応じたjsファイルを読み込む -->
+	<script src="files/js/javascripgbft.min.js"></script>
+	<!-- diff lib js -->
+	<script src="files/js/difflib.js"></script>
+	<script src="files/js/gitdiff.js"></script>
+	<script src="files/js/file_tabs.js"></script>
+	<script src="files/js/filelist.js"></script>
+	<script src="files/js/get_url.js"></script>
+	<script src="files/js/editor_init.js"></script>
+	<link rel="stylesheet" href="files/css/style.css">
+	<!-- <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/> -->
+</head>
+<body>
+	<h3>Open Folder</h3>
+	<hr>
+	<div class="open-folder-section">
+		<!-- Select folder section -->
+		<div class="folder-inner-section">
+		</div>
+		<form id="open-folder-form" action="/index" method="get">
+			<input type="input" class="form-control open-folder-input" name="file_name" placeholder="ファイルパスを入力">
+			<br>
+			<input type="submit" class="btn btn-submit">
+		</form>
+	</div>
+</body>
