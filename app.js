@@ -78,9 +78,26 @@ app.post('/create_file', function(req, res, next){
 // curl -X POST localhost:3000/create_index_json -H "Content-type:application/json" -d "{\"file_path\":\"./views\"}"
 app.post('/create_index_json', function(req, res, next){
 	// 
-	var file_path = req.body.file_path;
-	var file_result_array = load_file.save_file_index_json(file_path);
-	res.json({file_paths: file_result_array});
+	var file_path 		 = req.body.file_path;
+	var is_file_output	 = parseInt(req.body.is_output);
+	var file_result_hash;
+	if ( is_file_output == 1 ) {
+		new Promise ((resolve, reject) => {
+			file_result_hash = load_file.exec_save_file_index_json(file_path);
+			resolve(file_result_hash);
+		}).then(function(file_result){
+			res.json({files_paths: file_result});
+		}).catch(function(error){
+			res.json({status: "error" + error})
+		})
+	} else {
+		var file_result_hash = load_file.exec_save_file_index_json(file_path);
+		try {
+			res.json({file_paths: {}});
+		}catch(error){
+			res.json({status: "error" + error})
+		}
+	}
 });
 
 // [ Modal ]
