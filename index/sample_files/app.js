@@ -32,7 +32,7 @@ app.get("/open_folder", function(req, res, next){
 	res.render("open_folder", {});
 });
 
-// [ get File ]
+// get File
 app.get("/file_info", function(req, res, next){
 	// 
 	var file_name = req.query.file_name;
@@ -74,16 +74,7 @@ app.post('/create_file', function(req, res, next){
 	res.json({file_name: create_file_result});
 });
 
-// [ Generate Index JSON ]
-// curl -X POST localhost:3000/create_index_json -H "Content-type:application/json" -d "{\"file_path\":\"./views\"}"
-app.post('/create_index_json', function(req, res, next){
-	// 
-	var file_path = req.body.file_path;
-	var file_result_array = load_file.save_file_index_json(file_path);
-	res.json({file_paths: file_result_array});
-});
-
-// [ Modal ]
+// modal
 app.get("/get_modal", function(req, res, next){
 	var file_content  = load_file.modal_file();
 	var html_contents = file_content.split("<script>");
@@ -93,7 +84,7 @@ app.get("/get_modal", function(req, res, next){
 	res.json({html_content: file_content, js_content: js_script});
 });
 
-// [ Default ]
+// default
 app.get("/check_path", function(req, res, next){
 	var file_path  = req.query.file_path; //
 	var file_exist = load_file.check_path(file_path);
