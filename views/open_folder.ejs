@@ -28,6 +28,7 @@
 		<div class="folder-inner-section">
 		</div>
 		<form id="open-folder-form" action="/index" method="get">
+			<!-- 後ろに ' / ' 追加しないと、バグるような気がする。 -->
 			<input type="input" class="form-control open-folder-input" name="file_name" placeholder="ファイルパスを入力">
 			<br>
 			<input type="submit" class="btn btn-submit">
