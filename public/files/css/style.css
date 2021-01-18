@@ -20,6 +20,23 @@
 	background-color:#ef857d;
 }
 
+	/* Codemirror onmouseover tag */
+.on_mouseover_ele{
+	position:absolute;
+	background-color:rgba(45, 45, 45, 1);
+	min-height:50px;
+	width:200px;
+	padding:10px;
+	font-size:7px;
+	word-wrap: break-word;
+	z-index: 100;
+	color:#ddd;
+}
+
+.onmouseover_ele_title{
+	margin:3px auto;
+}
+
 /* File */
 .file-editor-section{
 	width:1000px;

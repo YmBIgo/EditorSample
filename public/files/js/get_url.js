@@ -32,6 +32,22 @@ function update_tab_editor_data(editor, tabs, file_index, result_="", is_temp_fi
 	});
 }
 
+function update_file_index(file_path){
+	// 
+	var file_index_path = "create_index_json";
+	var index_result_response;
+	return fetch(file_index_path, {
+		method: "POST",
+		headers: {
+			'content-type' : 'application/json',
+		},
+		body: JSON.stringify({file_path:file_path, is_output:1})
+	}).then(response => {
+		var index_response_json = response.json();
+		return index_response_json
+	})
+}
+
 // function for blank tab
 
 // function to temporary updating file content using ajax

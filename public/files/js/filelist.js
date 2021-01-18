@@ -83,6 +83,7 @@ function search_child (array, path, current_id, parent_id, file_bool){
 				tabs.tab_array_main = tabs.tab_array_main.slice(0, tab_main_len);
 			}
 			tabs.add_tab(current_id, parent_id);
+			editor_set_onmouseover();
 		});
 	}
 }

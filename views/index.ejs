@@ -18,6 +18,7 @@
 	<script src="files/js/filelist.js"></script>
 	<script src="files/js/get_url.js"></script>
 	<script src="files/js/editor_init.js"></script>
+	<script src="files/js/editor_codes.js"></script>
 	<link rel="stylesheet" href="files/css/style.css">
 	<!-- <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/> -->
 </head>
@@ -69,12 +70,27 @@ var original_path;
 var files_path     = "<%= index_page_file_name %>";
 var file_info_path = "file_info?file_name=" + files_path;
 var fileEditor;
+var index_result_response;
+var index_file_path = "./";
 $.getJSON(file_info_path, function(json){
 	// 
 	files_array   = json["files"];
 	files_indexed = json["files_indexed"];
 	original_path = json["original_path"];
-}).then(function(){
+})
+.then(function(){
+	// fetch
+	// index_file_path はマスクした方がいい
+	update_file_index(index_file_path)
+	.then(data => {
+		index_result_response = data;
+		console.log("indexing [" + index_file_path + "] file...");
+	}).catch(error => {
+		console.log(error);
+		index_result_response = error;
+	});
+})
+.then(function(){
 	// 
 	console.log(files_array, files_indexed);
 	fileEditor = initialize_editor(files_array, files_indexed);
