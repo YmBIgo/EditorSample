@@ -15,9 +15,14 @@ var server = app.listen(3000, function(){
 });
 
 // 
+// CSRF ...
+// 
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({
+	extended: true
+}));
 app.use(express.static('public'));
 
 app.get("/index", function(req, res, next){
@@ -70,6 +75,7 @@ app.post('/create_tempfile', function(req, res, next){
 app.post('/create_file', function(req, res, next){
 	var file_path = "files/user_name/" + req.body.file_path;
 	var file_content = req.body.file_content;
+	console.log("create file ", req.body);
 	var create_file_result = load_file.generate_file(file_path, file_content);
 	res.json({file_name: create_file_result});
 });

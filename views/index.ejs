@@ -71,7 +71,7 @@ var files_path     = "<%= index_page_file_name %>";
 var file_info_path = "file_info?file_name=" + files_path;
 var fileEditor;
 var index_result_response;
-var index_file_path = "./";
+var index_file_path = ".";
 $.getJSON(file_info_path, function(json){
 	// 
 	files_array   = json["files"];

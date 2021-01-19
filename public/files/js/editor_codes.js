@@ -131,7 +131,6 @@ function display_small_snipet(file_path, line_num, event){
 	current_editor.removeChild(current_mouseover_ele);
 	$.getJSON(json_file_path, function(json){
 		file_content = json["file_content"];
-		console.log(file_content.slice(0, 100));
 	})
 	.then(function(){
 		// 
@@ -143,7 +142,15 @@ function display_small_snipet(file_path, line_num, event){
 		current_editor.appendChild(mouseover_small_code_snipet);
 		mouseover_small_code_snipet.style.top  = current_top;
 		mouseover_small_code_snipet.style.left = current_left;
-		var codemirror_small_code_snippet = document.createElement("textarea");
+		// title
+		var small_code_snippet_title	  	= document.createElement("h5");
+		small_code_snippet_title.classList.add("code_snippet_ele_title");
+		small_code_snippet_title.innerText 	= file_path;
+		var small_code_snippet_form 		= code_snippet_form(file_path, file_content);
+		small_code_snippet_title.appendChild(small_code_snippet_form);
+		mouseover_small_code_snipet.appendChild(small_code_snippet_title);
+		// codemirror
+		var codemirror_small_code_snippet 	= document.createElement("textarea");
 		codemirror_small_code_snippet.setAttribute("id", "codemirrorCodeSnippet");
 		mouseover_small_code_snipet.appendChild(codemirror_small_code_snippet);
 		var snippet_tag = CodeMirror.fromTextArea(codemirrorCodeSnippet, {
@@ -157,3 +164,58 @@ function display_small_snipet(file_path, line_num, event){
 		}
 	});
 }
+
+function code_snippet_form(file_path, file_content){
+	var save_code_snippet_form		= document.createElement("form");
+	save_code_snippet_form.name 	= "save_snippet_form"
+	save_code_snippet_form.method 	= "post";
+	save_code_snippet_form.action 	= "/create_file";
+	save_code_snippet_form.setAttribute("id", "save_snippet_form");
+	save_code_snippet_form.style.display = "inline-block";
+	var file_path_hidden_input		= document.createElement("input");
+	file_path_hidden_input.type		= "hidden";
+	file_path_hidden_input.name 	= "file_path"
+	file_path_hidden_input.setAttribute("id", "file_path");
+	file_path_hidden_input.value 	= file_path;
+	var file_content_hidden_input	= document.createElement("input");
+	file_content_hidden_input.type	= "hidden";
+	file_content_hidden_input.name 	= "file_content"
+	file_content_hidden_input.setAttribute("id", "file_content");
+	file_content_hidden_input.value = file_content;
+	var code_snippet_submit_button	= document.createElement("input");
+	code_snippet_submit_button.type	= "submit";
+	code_snippet_submit_button.value = "送信する";
+	code_snippet_submit_button.name = "submit_button";
+	code_snippet_submit_button.style.display    = "inline-block";
+	code_snippet_submit_button.style.marginLeft = "20px";
+	code_snippet_submit_button.classList.add("btn-submit");
+	save_code_snippet_form.appendChild(file_path_hidden_input);
+	save_code_snippet_form.appendChild(file_content_hidden_input);
+	save_code_snippet_form.appendChild(code_snippet_submit_button);
+	// function to save file 
+	code_snippet_submit_button.onclick = (event) => {
+		// 
+		event.preventDefault();
+		var snippet_file_path 		= document.getElementById("file_path").value;
+		var snippet_file_content 	= document.getElementById("file_content").value;
+		var snippet_file_hash		= { 'file_path' : snippet_file_path, 'file_content' : snippet_file_content };
+		fetch('http://localhost:3000/create_file', {
+			method: 'POST',
+			headers: {
+				'content-type': 'application/json',
+			},
+			body: JSON.stringify(snippet_file_hash)
+		})
+		.then(function(response){
+			return response.json();
+		})
+		.then(function(data){
+			console.log(data["file_name"])
+		})
+		.catch(error => {
+			console.log(error);
+		})
+	}
+	return save_code_snippet_form
+}
+
