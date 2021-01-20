@@ -195,6 +195,7 @@
 	height:100%;
 	padding:10px 20px;
 	background-color:#fff;
+	overflow-y: scroll;
 }
 .search_modal_related_content{
 	border:1px solid rgba(45, 45, 45, .4);
@@ -204,6 +205,38 @@
 	text-align: center;
 
 }
+.search_modal_search_result_frame{
+	height: 130px;
+}
+.search_modal_search_result_ele{
+	vertical-align: top;
+	display: inline-block;
+	width: 60%;
+	height:110px;
+	margin-top:10px;
+	margin-bottom:10px;
+}
+.search_modal_search_result_option{
+	vertical-align: top;
+	display: inline-block;
+	width: 30%;
+	height: 110px;
+	margin-left:20px;
+	margin-top:10px;
+	margin-bottom:10px;
+	border:1px solid rgba(45, 45, 45, .4);
+}
+.search_modal_page_offset{
+	display:inline;
+	width:90%;
+	margin-left:5%;
+}
+.search_modal_page_offset_ele{
+	display: inline;
+	width:1%;
+	margin-left:2%;
+	margin-right:2%;
+}
 .search-btn{
 	background-color:rgba(207, 207, 207, .6);
 	color:#777;
@@ -211,11 +244,13 @@
 	padding:5px 20px;
 	border-radius:5px;
 }
+.search-btn-inner-snippet{
+	margin:45px 17% 45px 17%;
+}
 
 #keyword_result_area{
 	display:none;
-	overflow-y: scroll;
-	height:1500px;
+	height:auto;
 }
 
 /* Open folder */

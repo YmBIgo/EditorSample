@@ -1,5 +1,6 @@
 function display_search_modal(){
 	var html_file_content; var js_script_content;
+	if ( document.getElementById("modalSearchArea") != null ) { return }
 	$.getJSON("/get_search_modal", function(json){
 		html_file_content = json["html_content"];
 		js_script_content = json["js_script"];
@@ -23,7 +24,6 @@ function display_search_modal(){
 		});
 	})
 	.then(function(){
-		console.log(js_script_content)
 		eval(js_script_content);
 	});
 }

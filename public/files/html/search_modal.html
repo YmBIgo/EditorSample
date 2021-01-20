@@ -3,7 +3,7 @@
 		<div class="searchModalWapper">
 			<div class="modalContents" id="modalContentsInner">
 				<div id="keyword_search_header_area">
-					<a href="javascript:display_keyword_search_area()">コード検索</a>
+					<a id="code_search_href">コード検索</a>
 				</div>
 				<div id="keyword_search_area" style="text-align: center;margin-top:15%;">
 					<h1 class="modalTitle">コード 検索する</h1>
@@ -22,10 +22,10 @@
 				</div>
 				<div id="keyword_result_area">
 					<form id="search_modal_form2">
-						<p class="modalText" style="margin-left:0%;">
-							<input type="text" class="form-control searchForm modalInput" name="searchInput">
+						<p class="modalText" style="margin-left:0%;display:inline;width:70%">
+							<input type="text" class="form-control searchForm modalInput" style="width:80%" name="searchInput">
 						</p>
-						<p class="modalText" style="margin-left:0%;">
+						<p class="modalText" style="margin-left:0%;display:inline;">
 							<input type="submit" id="search_modal_form_button2" class="search-btn" name="" value="検索">
 						</p>
 					</form>
@@ -41,14 +41,15 @@
 <script>
 	var search_form_button = document.getElementById("search_modal_form_button");
 	var search_form_button_inside_result = document.getElementById("search_modal_form_button2");
+	var search_top_button = document.getElementById("code_search_href");
 	var search_result = [];
-	function search_qwant(event, search_keyword){
+	function search_qwant(event, search_keyword, page_offset=0){
 		// 
 		search_form_button.value = "検索中..."
 		event.preventDefault();
 		if ( search_keyword == "" ) { search_form_button.value = "検索"; return false }
 		var search_result_json = {};
-		var search_qwant_url = "/search_qwant?keyword=" + search_keyword;
+		var search_qwant_url = "/search_qwant?keyword=" + search_keyword + "&page_offset=" + page_offset;
 		console.log(search_qwant_url);
 		$.getJSON(search_qwant_url).success(function(json){
 			// 
@@ -61,27 +62,84 @@
 			search_result_area.innerHTML = "";
 			var search_result_elements = search_result_json["data"]["result"]["items"];
 			search_result_elements.forEach(function(ele){
-				var ele_url = ele["url"]; var ele_desc = ele["desc"];
-				var ele_title = ele["title"]; 
+				var search_result     = document.createElement("div");
+				search_result.classList.add("search_modal_search_result_frame");
+				// search result main
+				var ele_url = ele["url"]; var ele_desc = ele["desc"].slice(0, 140);
+				var ele_title = ele["title"];
 				var search_result_ele = document.createElement("div");
+				search_result_ele.classList.add("search_modal_search_result_ele")
 				var small_url_text = document.createElement("a");
 				small_url_text.innerText = ele_url; small_url_text.href = ele_url;
-				var title_url_text = document.createElement("h5");
+				small_url_text.style.fontSize = "7px"
+				var title_url_text = document.createElement("h4");
+				title_url_text.style.margin = "5px 0";
 				var title_url_href = document.createElement("a");
 				title_url_href.innerText = ele_title; title_url_href.href = ele_url;
 				title_url_text.append(title_url_href);
 				var desc_result_text = document.createElement("p");
 				desc_result_text.innerText = ele_desc;
+				desc_result_text.style.fontSize = "10px";
+				desc_result_text.style.margin  = "5px 0";
+				// search result right
+				var search_result_option = document.createElement("div");
+				var search_code_snippet_button  = document.createElement("input");
+				search_code_snippet_button.type = "button"
+				search_code_snippet_button.classList.add("search-btn");
+				search_code_snippet_button.classList.add("search-btn-inner-snippet");
+				search_code_snippet_button.value = "ページコード検索"
+				search_result_option.classList.add("search_modal_search_result_option");
+				search_result_option.append(search_code_snippet_button);
+				// append
 				search_result_ele.append(small_url_text);
 				search_result_ele.append(title_url_text);
 				search_result_ele.append(desc_result_text);
-				search_result_area.append(search_result_ele);
+				search_result.append(search_result_ele);
+				search_result.append(search_result_option);
+				search_result_area.append(search_result);
 			});
+			var blank_row = document.createElement("br");
+			search_result_area.append(blank_row);
+			search_result_area.append(blank_row);
+			var page_offset_array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+			var page_offset_div   = document.createElement("div");
+			page_offset_div.classList.add("search_modal_page_offset");
+			page_offset_array.forEach(function(page_offset_i){
+				// 
+				var page_offset_ele = document.createElement("div");
+				page_offset_ele.innerText = page_offset_i + 1;
+				page_offset_ele.classList.add("search_modal_page_offset_ele");
+				page_offset_ele.onclick = function(e) {
+					onloading_search_result_area();
+					var search_keyword   = document.getElementsByClassName("searchForm")[1].value.replaceAll(" ", "");
+					search_qwant(e, search_keyword, page_offset_i);
+				}
+				page_offset_div.append(page_offset_ele);
+			});
+			search_result_area.append(page_offset_div);
 		})
+	}
+	function display_keyword_search_area(){
+		var main_search_area = document.getElementById("keyword_search_area");
+		main_search_area.style.display = "block";
+		var search_result_area = document.getElementById("keyword_result_area");
+		search_result_area.style.display = "none";
+	}
+	function onloading_search_result_area(){
+		var search_result_area = document.getElementById("search_modal_search_result_content");
+		var search_result_now_searching_dialog = document.createElement("div");
+		search_result_now_searching_dialog.innerHTML = "<h5 style='margin-top:200px;text-align: center;'>検索中</h5>"
+		search_result_area.innerHTML = "";
+		search_result_area.append(search_result_now_searching_dialog);
+	}
+	search_top_button.onclick = function(e) {
+		onloading_search_result_area();
+		display_keyword_search_area();
 	}
 	search_form_button.onclick = function(e) {
 		var search_keyword   = document.getElementsByClassName("searchForm")[0].value.replaceAll(" ", "");
-		search_qwant(e, search_keyword);
+		document.getElementsByClassName("searchForm")[1].value = search_keyword;
+		search_qwant(e, search_keyword, 0);
 		var main_search_area = document.getElementById("keyword_search_area");
 		main_search_area.style.display = "none";
 		var search_result_area = document.getElementById("keyword_result_area");
@@ -89,11 +147,8 @@
 	}
 	search_form_button_inside_result.onclick = function(e) {
 		// 
-		var search_result_area = document.getElementById("search_modal_search_result_content");
-		var search_result_now_searching_dialog = document.createElement("h5");
-		search_result_now_searching_dialog.innerHTML = "<h5 style='margin-top:200px;text-align: center;'>検索中</h5>"
-		search_result_area.innerHTML = "";
+		onloading_search_result_area();
 		var search_keyword   = document.getElementsByClassName("searchForm")[1].value.replaceAll(" ", "");
-		search_qwant(e, search_keyword);
+		search_qwant(e, search_keyword, 0);
 	}
 </script>

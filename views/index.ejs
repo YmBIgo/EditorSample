@@ -20,6 +20,7 @@
 	<script src="files/js/editor_init.js"></script>
 	<script src="files/js/editor_codes.js"></script>
 	<script src="files/js/search_modal.js"></script>
+	<script src="files/js/command_shortcut.js"></script>
 	<link rel="stylesheet" href="files/css/style.css">
 	<!-- <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/> -->
 </head>
@@ -29,7 +30,7 @@
 		<img src="files/image/loading_page.gif" id="loading-image">
 	</div>
 </section>
-	<p>Editor　<a class="btn-submit" href="javascript:(display_search_modal())">検索する</a></p>
+	<p>Editor　<a class="btn-submit" href="javascript:(display_search_modal())">検索する</a> <small>( [ SHIFT+G ] でも 検索Modal表示 )</small> </p>
 	<div class="file-editor-section">
 		<div class="file-editor-folder-section">
 			<h4 style="margin:10px">Folers</h4>
@@ -93,6 +94,10 @@ $.getJSON(file_info_path, function(json){
 	console.log(files_array, files_indexed);
 	fileEditor = initialize_editor(files_array, files_indexed);
 	$("#modalLoadingArea").fadeOut();
+});
+
+document.addEventListener('keydown', function(event){
+	check_command_line(event);
 });
 
 </script>
