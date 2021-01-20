@@ -2,7 +2,7 @@
 // ToDo List
 // 	 1 : onmouse_over position
 //   2 : add editor_set_onmouseover @ tab file
-// 
+// 	 3 : change pos small code snippet 
 
 function editor_set_onmouseover(){
 	var current_editor = document.getElementsByClassName("cm-s-default")[0];
@@ -73,6 +73,7 @@ function searchRelativeText(tab_text) {
 	var indexed_extension_name; var file_response_source;
 	var file_response_index; var file_response_index_inner;
 	var file_response_index_array = [];
+	// 
 	if ( file_extension_array.includes(current_extension) == false ) {
 		return false
 	} else {
@@ -196,6 +197,8 @@ function code_snippet_form(file_path, file_content){
 	code_snippet_submit_button.onclick = (event) => {
 		// 
 		event.preventDefault();
+		code_snippet_submit_button.style.opacity = "0.4";
+		code_snippet_submit_button.value 	  	= "送信中...";
 		var snippet_file_path 		= document.getElementById("file_path").value;
 		var snippet_file_content 	= document.getElementById("file_content").value;
 		var snippet_file_hash		= { 'file_path' : snippet_file_path, 'file_content' : snippet_file_content };
@@ -210,6 +213,8 @@ function code_snippet_form(file_path, file_content){
 			return response.json();
 		})
 		.then(function(data){
+			code_snippet_submit_button.value 	  	 = "送信する";
+			code_snippet_submit_button.style.opacity = "1";
 			console.log(data["file_name"])
 		})
 		.catch(error => {

@@ -1,0 +1,99 @@
+<section id="modalSearchArea" class="modalArea">
+	<div id="modalBg" class="modalBg">
+		<div class="searchModalWapper">
+			<div class="modalContents" id="modalContentsInner">
+				<div id="keyword_search_header_area">
+					<a href="javascript:display_keyword_search_area()">コード検索</a>
+				</div>
+				<div id="keyword_search_area" style="text-align: center;margin-top:15%;">
+					<h1 class="modalTitle">コード 検索する</h1>
+					<form id="search_modal_form">
+						<p class="modalText" style="margin-left:0%;">
+							<input type="text" class="form-control searchForm modalInput" name="searchInput">
+						</p>
+						<p class="modalText" style="margin-left:0%;">
+							<input type="submit" id="search_modal_form_button" class="search-btn" name="" value="検索">
+						</p>
+					</form>
+					<br>
+					<div class="search_modal_related_content">
+						<h5>必要ならコンテンツ追加</h5>
+					</div>
+				</div>
+				<div id="keyword_result_area">
+					<form id="search_modal_form2">
+						<p class="modalText" style="margin-left:0%;">
+							<input type="text" class="form-control searchForm modalInput" name="searchInput">
+						</p>
+						<p class="modalText" style="margin-left:0%;">
+							<input type="submit" id="search_modal_form_button2" class="search-btn" name="" value="検索">
+						</p>
+					</form>
+					<hr>
+					<div id="search_modal_search_result_content">
+						<h5 style="margin-top:200px;text-align: center;">検索中</h5>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<script>
+	var search_form_button = document.getElementById("search_modal_form_button");
+	var search_form_button_inside_result = document.getElementById("search_modal_form_button2");
+	var search_result = [];
+	function search_qwant(event, search_keyword){
+		// 
+		search_form_button.value = "検索中..."
+		event.preventDefault();
+		if ( search_keyword == "" ) { search_form_button.value = "検索"; return false }
+		var search_result_json = {};
+		var search_qwant_url = "/search_qwant?keyword=" + search_keyword;
+		console.log(search_qwant_url);
+		$.getJSON(search_qwant_url).success(function(json){
+			// 
+			console.log(json["search_result"]);
+			search_result_json = JSON.parse(json["search_result"]);
+		}).done(function(){
+			console.log("[ Search Result ] : ", search_result_json);
+			search_form_button.value = "検索";
+			var search_result_area = document.getElementById("search_modal_search_result_content");
+			search_result_area.innerHTML = "";
+			var search_result_elements = search_result_json["data"]["result"]["items"];
+			search_result_elements.forEach(function(ele){
+				var ele_url = ele["url"]; var ele_desc = ele["desc"];
+				var ele_title = ele["title"]; 
+				var search_result_ele = document.createElement("div");
+				var small_url_text = document.createElement("a");
+				small_url_text.innerText = ele_url; small_url_text.href = ele_url;
+				var title_url_text = document.createElement("h5");
+				var title_url_href = document.createElement("a");
+				title_url_href.innerText = ele_title; title_url_href.href = ele_url;
+				title_url_text.append(title_url_href);
+				var desc_result_text = document.createElement("p");
+				desc_result_text.innerText = ele_desc;
+				search_result_ele.append(small_url_text);
+				search_result_ele.append(title_url_text);
+				search_result_ele.append(desc_result_text);
+				search_result_area.append(search_result_ele);
+			});
+		})
+	}
+	search_form_button.onclick = function(e) {
+		var search_keyword   = document.getElementsByClassName("searchForm")[0].value.replaceAll(" ", "");
+		search_qwant(e, search_keyword);
+		var main_search_area = document.getElementById("keyword_search_area");
+		main_search_area.style.display = "none";
+		var search_result_area = document.getElementById("keyword_result_area");
+		search_result_area.style.display = "block";
+	}
+	search_form_button_inside_result.onclick = function(e) {
+		// 
+		var search_result_area = document.getElementById("search_modal_search_result_content");
+		var search_result_now_searching_dialog = document.createElement("h5");
+		search_result_now_searching_dialog.innerHTML = "<h5 style='margin-top:200px;text-align: center;'>検索中</h5>"
+		search_result_area.innerHTML = "";
+		var search_keyword   = document.getElementsByClassName("searchForm")[1].value.replaceAll(" ", "");
+		search_qwant(e, search_keyword);
+	}
+</script>

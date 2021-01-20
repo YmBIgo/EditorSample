@@ -1,6 +1,8 @@
 // 
 var express = require("express");
 var app = express();
+// var fetch 	= require("node-fetch");
+var got 	= require("got");
 var load_file  = require("./lib/func/load_file");
 var bodyParser = require("body-parser");
 // 
@@ -80,6 +82,32 @@ app.post('/create_file', function(req, res, next){
 	res.json({file_name: create_file_result});
 });
 
+// Qwant
+app.get('/search_qwant', function(req, res, next){
+	// 
+	// axios とかも 検討
+	// 	 > URL 情報取得で Promise 使えるようになりたい
+	var keyword 	  = req.query.keyword;
+	var page_offset   = req.query.page_offset;
+	var qwant_url 	  = "https://api.qwant.com/api/search/web?count=10&offset=" + page_offset + "&q=" + keyword + "&language=german&t=web&uiv=1";
+	var response_result;
+	console.log(qwant_url);
+	(async () => {
+		try {
+			const response = await got(qwant_url); // await 
+			response_result = response.body
+			// Status
+		} catch (error) {
+			console.log(error.response.body);
+		}
+	})()
+	.then(function(){
+		res.send({search_result: response_result})
+	})
+	// var search_result = load_file.search_qwant(keyword, page_offset);
+	// console.log(search_result);
+})
+
 // [ Generate Index JSON ]
 // curl -X POST localhost:3000/create_index_json -H "Content-type:application/json" -d "{\"file_path\":\"./views\"}"
 app.post('/create_index_json', function(req, res, next){
@@ -108,13 +136,23 @@ app.post('/create_index_json', function(req, res, next){
 
 // [ Modal ]
 app.get("/get_modal", function(req, res, next){
-	var file_content  = load_file.modal_file();
+	// should change function name
+	//    > tabjs の getJSON(/get_modal) 部分 など
+	var file_content  = load_file.modal_file("public/files/html/new_file_name_modal.html");
 	var html_contents = file_content.split("<script>");
 	var html_content  = html_contents[0];
-	var js_script	  = html_contents[1].replace("</script>");
+	var js_script	  = html_contents[1].replace("</script>", "");
 	// json ?
 	res.json({html_content: file_content, js_content: js_script});
 });
+app.get("/get_search_modal", function(req, res, next){
+	var file_content  = load_file.modal_file("public/files/html/search_modal.html");
+	var html_contents = file_content.split("<script>");
+	var html_content  = html_contents[0];
+	var js_script 	  = html_contents[1].replace("</script>", "");
+	// json
+	res.json({html_content: html_content, js_script: js_script});
+})
 
 // [ Default ]
 app.get("/check_path", function(req, res, next){
@@ -122,5 +160,3 @@ app.get("/check_path", function(req, res, next){
 	var file_exist = load_file.check_path(file_path);
 	res.json({ file_exist: file_exist });
 });
-
-

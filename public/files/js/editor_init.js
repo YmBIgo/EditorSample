@@ -7,7 +7,7 @@ function initialize_editor(files_array, files_index) {
 	    lineNumbers: true,
 	    indentUnit: 4
 	});
-	fileEditor.setSize(null, 600);
+	fileEditor.setSize(null, 390);
 	fileEditor.on("change", function(cm, change){
 		// could implement func using variable [change]
 		//    > need not to send tons of content getValue() gets
