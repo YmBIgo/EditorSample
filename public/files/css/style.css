@@ -226,6 +226,11 @@
 	margin-bottom:10px;
 	border:1px solid rgba(45, 45, 45, .4);
 }
+.search_modal_search_result_textarea{
+	margin-top:-120px;
+	margin-bottom:10px;
+	display:none;
+}
 .search_modal_page_offset{
 	display:inline;
 	width:90%;

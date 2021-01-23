@@ -84,7 +84,7 @@
 				// search result right
 				var search_result_option = document.createElement("div");
 				var search_code_snippet_button  = document.createElement("input");
-				var search_result_textarea 		= document.createElement("textarea")
+				var search_result_textarea 		= document.createElement("textarea");
 				search_code_snippet_button.type = "button"
 				search_code_snippet_button.classList.add("search-btn");
 				search_code_snippet_button.classList.add("search-btn-inner-snippet");
@@ -92,8 +92,12 @@
 				search_code_snippet_button.onclick = function(e){
 					get_code_snippet_hash(ele_url, index);
 				}
+				var search_textarea_id = "code_snippet_textarea_" + index;
+				search_result_textarea.setAttribute("id", search_textarea_id);
+				search_result_textarea.classList.add("search_modal_search_result_textarea");
 				search_result_option.classList.add("search_modal_search_result_option");
 				search_result_option.append(search_code_snippet_button);
+				search_result_option.append(search_result_textarea);
 				// append
 				search_result_ele.append(small_url_text);
 				search_result_ele.append(title_url_text);
@@ -123,15 +127,74 @@
 			search_result_area.append(page_offset_div);
 		})
 	}
-	function get_code_snippet_hash(snippet_url){
+	function get_code_snippet_hash(snippet_url, index){
 		var get_code_snippet_original_url = "http://localhost:3000/get_code_data_from_url?page_url=";
 		var get_code_snippet_url = get_code_snippet_original_url + snippet_url;
-		var code_snippet_hash = {}
+		var code_snippet_hash = {};
+		var textarea_ele_id	  = "code_snippet_textarea_" + index;
+		var textarea_ele = document.getElementById(textarea_ele_id);
+		var right_section_ele = document.getElementsByClassName("search_modal_search_result_option")[index];
+		var search_button_ele = right_section_ele.getElementsByClassName("search-btn")[0];
+		search_button_ele.remove();
+		var code_snippet_width = right_section_ele.clientWidth * 0.95;
+		var jsEditor = CodeMirror.fromTextArea(textarea_ele, {
+		    mode: "javascript",
+		    lineNumbers: true,
+		    indentUnit: 4
+		});
+		jsEditor.setSize(code_snippet_width, 87);
+		jsEditor.setValue("\nLoading...");
+		var js_editor_ele 	  = right_section_ele.getElementsByClassName("CodeMirror")[0];
 		$.getJSON(get_code_snippet_url, function(snippet_json){
 			code_snippet_hash = snippet_json
 		}).then(function(){
 			console.log(code_snippet_hash);
+			var code_snippet_keys = Object.keys(code_snippet_hash);
+			if ( code_snippet_keys.length == 0 ) {
+				jsEditor.setValue("\n No result ...")
+			} else {
+				var code_snippet_keys  = Object.keys(code_snippet_hash);
+				var first_code_snippet = code_snippet_hash[code_snippet_keys[0]];
+				var prev_button = document.createElement("a");
+				var next_button = document.createElement("a");
+				var current_status = document.createElement("span");
+				var current_status_text = document.createElement("span");
+				var footer_section = document.createElement("span");
+				current_status.setAttribute("code_snippet_id", 0);
+				prev_button.innerText  = "<  ";
+				prev_button.onclick = function(e) {
+					change_code_snippet_data(code_snippet_hash, jsEditor, 0, current_status, current_status_text);
+				}
+				next_button.innerText  = "  > ";
+				next_button.onclick = function(e) {
+					change_code_snippet_data(code_snippet_hash, jsEditor, 1, current_status, current_status_text);
+				}
+				current_status_text.innerText = "   1 / " + code_snippet_keys.length
+				jsEditor.setValue(first_code_snippet["file_content"]);
+				footer_section.append(prev_button);
+				footer_section.append(next_button);
+				footer_section.append(current_status);
+				footer_section.append(current_status_text);
+				js_editor_ele.after(footer_section);
+			}
 		})
+	}
+	function change_code_snippet_data(code_snippet_hash, editor, up_or_down, status_ele, status_ele_text){
+		var current_status = parseInt(status_ele.getAttribute("code_snippet_id"));
+		var code_snippet_keys = Object.keys(code_snippet_hash);
+		if ( current_status == code_snippet_keys.length || current_status == -1 ) { return }
+		if ( up_or_down == 0 ) { current_status -= 1 } else { current_status += 1 }
+		var code_snippet_key  = code_snippet_keys[current_status];
+		console.log("changing code snippet ...");
+		console.log(current_status, code_snippet_key);
+		if ( code_snippet_key == undefined ) {
+			return
+		}
+		var code_snippet_content = code_snippet_hash[code_snippet_key]["file_content"];
+		status_ele.setAttribute("code_snippet_id", current_status);
+		var current_status_t = current_status + 1;
+		status_ele_text.innerText = "   " + current_status_t + " / " + code_snippet_keys.length;
+		editor.setValue(code_snippet_content);
 	}
 	function display_keyword_search_area(){
 		var main_search_area = document.getElementById("keyword_search_area");
