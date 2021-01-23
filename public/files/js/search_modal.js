@@ -1,3 +1,4 @@
+// 
 function display_search_modal(){
 	var html_file_content; var js_script_content;
 	if ( document.getElementById("modalSearchArea") != null ) { return }

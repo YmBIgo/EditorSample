@@ -93,8 +93,10 @@ $.getJSON(file_info_path, function(json){
 	// 
 	console.log(files_array, files_indexed);
 	fileEditor = initialize_editor(files_array, files_indexed);
+}).then(function(){
+	// 
 	$("#modalLoadingArea").fadeOut();
-});
+})
 
 document.addEventListener('keydown', function(event){
 	check_command_line(event);

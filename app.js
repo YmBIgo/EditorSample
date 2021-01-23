@@ -4,6 +4,7 @@ var app = express();
 // var fetch 	= require("node-fetch");
 var got 	= require("got");
 var load_file  = require("./lib/func/load_file");
+var code_snippet_getter = require("./lib/func/code_snippet");
 var bodyParser = require("body-parser");
 // 
 var all_file = new Array;
@@ -77,7 +78,6 @@ app.post('/create_tempfile', function(req, res, next){
 app.post('/create_file', function(req, res, next){
 	var file_path = "files/user_name/" + req.body.file_path;
 	var file_content = req.body.file_content;
-	console.log("create file ", req.body);
 	var create_file_result = load_file.generate_file(file_path, file_content);
 	res.json({file_name: create_file_result});
 });
@@ -106,6 +106,13 @@ app.get('/search_qwant', function(req, res, next){
 	})
 	// var search_result = load_file.search_qwant(keyword, page_offset);
 	// console.log(search_result);
+})
+
+app.get('/get_code_data_from_url', function(req, res, next){
+	// 
+	var page_url 	= req.query.page_url;
+	var response_result;
+	code_snippet_getter.get_code_snippet_json(page_url, res);
 })
 
 // [ Generate Index JSON ]

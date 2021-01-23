@@ -61,7 +61,7 @@
 			var search_result_area = document.getElementById("search_modal_search_result_content");
 			search_result_area.innerHTML = "";
 			var search_result_elements = search_result_json["data"]["result"]["items"];
-			search_result_elements.forEach(function(ele){
+			search_result_elements.forEach(function(ele, index){
 				var search_result     = document.createElement("div");
 				search_result.classList.add("search_modal_search_result_frame");
 				// search result main
@@ -84,10 +84,14 @@
 				// search result right
 				var search_result_option = document.createElement("div");
 				var search_code_snippet_button  = document.createElement("input");
+				var search_result_textarea 		= document.createElement("textarea")
 				search_code_snippet_button.type = "button"
 				search_code_snippet_button.classList.add("search-btn");
 				search_code_snippet_button.classList.add("search-btn-inner-snippet");
 				search_code_snippet_button.value = "ページコード検索"
+				search_code_snippet_button.onclick = function(e){
+					get_code_snippet_hash(ele_url, index);
+				}
 				search_result_option.classList.add("search_modal_search_result_option");
 				search_result_option.append(search_code_snippet_button);
 				// append
@@ -117,6 +121,16 @@
 				page_offset_div.append(page_offset_ele);
 			});
 			search_result_area.append(page_offset_div);
+		})
+	}
+	function get_code_snippet_hash(snippet_url){
+		var get_code_snippet_original_url = "http://localhost:3000/get_code_data_from_url?page_url=";
+		var get_code_snippet_url = get_code_snippet_original_url + snippet_url;
+		var code_snippet_hash = {}
+		$.getJSON(get_code_snippet_url, function(snippet_json){
+			code_snippet_hash = snippet_json
+		}).then(function(){
+			console.log(code_snippet_hash);
 		})
 	}
 	function display_keyword_search_area(){
