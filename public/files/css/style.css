@@ -278,6 +278,22 @@
 	color:#bbb;
 	font-size:7px;
 }
+	/* Search Result Display Version2 */
+.search_modal_search_result_frame_ver2 {
+	vertical-align: top;
+	width:45%; /* 41% とかにしておいて、左右の矢印つける */
+	display:inline-block;
+	border:1px rgba(45, 45, 45, .5) solid;
+	padding:10px;
+	margin: 10px 1%;
+}
+.search_modal_search_result_ele_ver2 {
+	vertical-align: top;
+	display: inline-block;
+	width: 90%;
+	margin-top:10px;
+	margin-bottom:10px;
+}
 
 /* Open folder */
 .open-folder-section{

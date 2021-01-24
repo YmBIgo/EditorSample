@@ -23,10 +23,10 @@
 				<div id="keyword_result_area">
 					<form id="search_modal_form2">
 						<p class="modalText" style="margin-left:0%;display:inline;width:70%">
-							<input type="text" class="form-control searchForm modalInput" style="width:80%" name="searchInput">
+							<input type="text" class="form-control searchForm modalInput" style="width:70%" name="searchInput">
 						</p>
 						<p class="modalText" style="margin-left:0%;display:inline;">
-							<input type="submit" id="search_modal_form_button2" class="search-btn" name="" value="検索">
+							<input type="submit" id="search_modal_form_button2" class="search-btn" name="" value="検索"> 
 						</p>
 					</form>
 					<hr>
@@ -58,73 +58,7 @@
 		}).done(function(){
 			console.log("[ Search Result ] : ", search_result_json);
 			search_form_button.value = "検索";
-			var search_result_area = document.getElementById("search_modal_search_result_content");
-			search_result_area.innerHTML = "";
-			var search_result_elements = search_result_json["data"]["result"]["items"];
-			search_result_elements.forEach(function(ele, index){
-				var search_result     = document.createElement("div");
-				search_result.classList.add("search_modal_search_result_frame");
-				// search result main
-				var ele_url = ele["url"]; var ele_desc = ele["desc"].slice(0, 140);
-				var ele_title = ele["title"];
-				var search_result_ele = document.createElement("div");
-				search_result_ele.classList.add("search_modal_search_result_ele")
-				var small_url_text = document.createElement("a");
-				small_url_text.innerText = ele_url; small_url_text.href = ele_url;
-				small_url_text.style.fontSize = "7px"
-				var title_url_text = document.createElement("h4");
-				title_url_text.style.margin = "5px 0";
-				var title_url_href = document.createElement("a");
-				title_url_href.innerText = ele_title; title_url_href.href = ele_url;
-				title_url_text.append(title_url_href);
-				var desc_result_text = document.createElement("p");
-				desc_result_text.innerText = ele_desc;
-				desc_result_text.style.fontSize = "10px";
-				desc_result_text.style.margin  = "5px 0";
-				// search result right
-				var search_result_option = document.createElement("div");
-				var search_code_snippet_button  = document.createElement("input");
-				var search_result_textarea 		= document.createElement("textarea");
-				search_code_snippet_button.type = "button"
-				search_code_snippet_button.classList.add("search-btn");
-				search_code_snippet_button.classList.add("search-btn-inner-snippet");
-				search_code_snippet_button.value = "ページコード検索"
-				search_code_snippet_button.onclick = function(e){
-					get_code_snippet_hash(ele_url, index, search_keyword, ele_title, ele_url);
-				}
-				var search_textarea_id = "code_snippet_textarea_" + index;
-				search_result_textarea.setAttribute("id", search_textarea_id);
-				search_result_textarea.classList.add("search_modal_search_result_textarea");
-				search_result_option.classList.add("search_modal_search_result_option");
-				search_result_option.append(search_code_snippet_button);
-				search_result_option.append(search_result_textarea);
-				// append
-				search_result_ele.append(small_url_text);
-				search_result_ele.append(title_url_text);
-				search_result_ele.append(desc_result_text);
-				search_result.append(search_result_ele);
-				search_result.append(search_result_option);
-				search_result_area.append(search_result);
-			});
-			var blank_row = document.createElement("br");
-			search_result_area.append(blank_row);
-			search_result_area.append(blank_row);
-			var page_offset_array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-			var page_offset_div   = document.createElement("div");
-			page_offset_div.classList.add("search_modal_page_offset");
-			page_offset_array.forEach(function(page_offset_i){
-				// 
-				var page_offset_ele = document.createElement("div");
-				page_offset_ele.innerText = page_offset_i + 1;
-				page_offset_ele.classList.add("search_modal_page_offset_ele");
-				page_offset_ele.onclick = function(e) {
-					onloading_search_result_area();
-					var search_keyword   = document.getElementsByClassName("searchForm")[1].value.replaceAll(" ", "");
-					search_qwant(e, search_keyword, page_offset_i);
-				}
-				page_offset_div.append(page_offset_ele);
-			});
-			search_result_area.append(page_offset_div);
+			display_ver1_mode(search_result_json, search_keyword);
 		})
 	}
 	function get_code_snippet_hash(snippet_url, index, search_keyword, page_title, page_url){
@@ -151,52 +85,9 @@
 			console.log(code_snippet_hash);
 			var code_snippet_keys = Object.keys(code_snippet_hash);
 			if ( code_snippet_keys.length == 0 ) {
-				jsEditor.setValue("\n No result ...")
+				generate_code_snippet_footer(code_snippet_hash, jsEditor, textarea_ele_id, textarea_ele, js_editor_ele, right_section_ele, search_keyword, page_title, page_url, false);
 			} else {
-				var code_snippet_keys  = Object.keys(code_snippet_hash);
-				var first_code_snippet = code_snippet_hash[code_snippet_keys[0]];
-				var prev_button = document.createElement("a");
-				var next_button = document.createElement("a");
-				var current_status = document.createElement("span");
-				var current_status_text = document.createElement("span");
-				var open_editor_button	= document.createElement("span");
-				var current_copy_button = document.createElement("span");
-				var right_side_text 	= document.createElement("span");
-				var footer_section = document.createElement("span");
-				current_status.setAttribute("code_snippet_id", 0);
-				footer_section.classList.add("search_modal_search_result_option_footer");
-				prev_button.innerText  = "<  ";
-				prev_button.onclick = function(e) {
-					change_code_snippet_data(code_snippet_hash, jsEditor, 0, current_status, current_status_text, textarea_ele_id);
-				}
-				next_button.innerText  = "  > ";
-				next_button.onclick = function(e) {
-					change_code_snippet_data(code_snippet_hash, jsEditor, 1, current_status, current_status_text, textarea_ele_id);
-				}
-				current_status_text.innerText = "   1 / " + code_snippet_keys.length
-				open_editor_button.innerText  = "[エディタで編集]";
-				open_editor_button.style.margin = "0 7px";
-				open_editor_button.onclick  = function(e) {
-					$('#modalSearchArea').fadeOut();
-					generate_search_code_snippet(code_snippet_hash, search_keyword, page_title, page_url); // search_modal.js の中身
-				}
-				current_copy_button.innerText = "[コピーする]";
-				current_copy_button.style.margin = "0 7px";
-				current_copy_button.onclick = function(e) {
-					copy_code(textarea_ele);
-				}
-				right_side_text.append(open_editor_button);
-				right_side_text.append(current_copy_button);
-				jsEditor.setValue(first_code_snippet["file_content"]);
-				textarea_ele.value = first_code_snippet["file_content"];
-				textarea_ele.style.display = "block";
-				footer_section.append(prev_button);
-				footer_section.append(current_status);
-				footer_section.append(next_button);
-				footer_section.append(current_status_text);
-				footer_section.append(right_side_text);
-				js_editor_ele.after(footer_section);
-				right_section_ele.getElementsByClassName("CodeMirror")[0].style.top = "-6px";
+				generate_code_snippet_footer(code_snippet_hash, jsEditor, textarea_ele_id, textarea_ele, js_editor_ele, right_section_ele, search_keyword, page_title, page_url, true);
 			}
 		})
 	}
@@ -221,10 +112,215 @@
 		textarea_ele.select();
 		document.execCommand("copy");
 	}
-	function display_code_snippet_at_editor(code_content, ){
-		// 1. #modalSearchArea を fadeOut
-		// 2. editor の左の方に タブ作成。同時編集 & タブ閉じ & 移動 できるよう
-		// 3. 
+	function generate_code_snippet_footer(code_snippet_hash, editor, textarea_ele_id, textarea_ele, editor_ele, append_section_ele, search_keyword, page_title, page_url, is_clickable=true){
+		// 
+		var code_snippet_keys  = (is_clickable == true) ? Object.keys(code_snippet_hash) : [""];
+		var first_code_snippet = (is_clickable == true) ? code_snippet_hash[code_snippet_keys[0]]["file_content"] : "\n No result ...";
+		var prev_button = document.createElement("a");
+		var next_button = document.createElement("a");
+		var current_status = document.createElement("span");
+		var current_status_text = document.createElement("span");
+		var open_editor_button	= document.createElement("span");
+		var current_copy_button = document.createElement("span");
+		var right_side_text 	= document.createElement("span");
+		var footer_section = document.createElement("span");
+		current_status.setAttribute("code_snippet_id", 0);
+		footer_section.classList.add("search_modal_search_result_option_footer");
+		prev_button.innerText  = "<  ";
+		next_button.innerText  = "  > ";
+		current_status_text.innerText = "   1 / " + code_snippet_keys.length
+		open_editor_button.innerText  = "[エディタで編集]";
+		open_editor_button.style.margin = "0 7px";
+		current_copy_button.innerText = "[コピーする]";
+		current_copy_button.style.margin = "0 7px";
+		// 
+		if ( is_clickable == true ) {
+			prev_button.onclick = function(e) {
+				change_code_snippet_data(code_snippet_hash, editor, 0, current_status, current_status_text, textarea_ele_id);
+			}
+			next_button.onclick = function(e) {
+				change_code_snippet_data(code_snippet_hash, editor, 1, current_status, current_status_text, textarea_ele_id);
+			}
+			open_editor_button.onclick  = function(e) {
+				$('#modalSearchArea').fadeOut();
+				generate_search_code_snippet(code_snippet_hash, search_keyword, page_title, page_url); // search_modal.js の中身
+			}
+			current_copy_button.onclick = function(e) {
+				copy_code(textarea_ele);
+			}
+		}
+		// append 
+		right_side_text.append(open_editor_button);
+		right_side_text.append(current_copy_button);
+		editor.setValue(first_code_snippet);
+		textarea_ele.value = first_code_snippet;
+		textarea_ele.style.display = "block";
+		footer_section.append(prev_button);
+		footer_section.append(current_status);
+		footer_section.append(next_button);
+		footer_section.append(current_status_text);
+		footer_section.append(right_side_text);
+		editor_ele.after(footer_section);
+		append_section_ele.getElementsByClassName("CodeMirror")[0].style.top = "-6px";
+	}
+	//
+	function display_ver1_mode(search_result_json, search_keyword){
+		var search_result_area = document.getElementById("search_modal_search_result_content");
+		search_result_area.innerHTML = "";
+		var search_result_elements = search_result_json["data"]["result"]["items"];
+		// append change display mode
+		var change_display_mode_text   = document.createElement("p");
+		var change_display_mode_button = document.createElement("a");
+		change_display_mode_button.classList.add("search-btn");
+		change_display_mode_button.innerText = "表示変更"
+		change_display_mode_button.onclick = function(e){
+			display_ver2_mode(search_result_json, 0, search_keyword);
+		}
+		change_display_mode_text.append(change_display_mode_button);
+		search_result_area.append(change_display_mode_text);
+		// append search result
+		search_result_elements.forEach(function(ele, index){
+			var search_result     = document.createElement("div");
+			search_result.classList.add("search_modal_search_result_frame");
+			// search result main
+			var ele_url = ele["url"]; var ele_desc = ele["desc"].slice(0, 140);
+			var ele_title = ele["title"];
+			var search_result_ele = document.createElement("div");
+			search_result_ele.classList.add("search_modal_search_result_ele")
+			var small_url_text = document.createElement("a");
+			small_url_text.innerText = ele_url; small_url_text.href = ele_url;
+			small_url_text.style.fontSize = "7px"
+			var title_url_text = document.createElement("h4");
+			title_url_text.style.margin = "5px 0";
+			var title_url_href = document.createElement("a");
+			title_url_href.innerText = ele_title; title_url_href.href = ele_url;
+			title_url_text.append(title_url_href);
+			var desc_result_text = document.createElement("p");
+			desc_result_text.innerText = ele_desc;
+			desc_result_text.style.fontSize = "10px";
+			desc_result_text.style.margin  = "5px 0";
+			// search result right
+			var search_result_option = document.createElement("div");
+			var search_code_snippet_button  = document.createElement("input");
+			var search_result_textarea 		= document.createElement("textarea");
+			search_code_snippet_button.type = "button"
+			search_code_snippet_button.classList.add("search-btn");
+			search_code_snippet_button.classList.add("search-btn-inner-snippet");
+			search_code_snippet_button.value = "ページコード検索"
+			search_code_snippet_button.onclick = function(e){
+				get_code_snippet_hash(ele_url, index, search_keyword, ele_title, ele_url);
+			}
+			var search_textarea_id = "code_snippet_textarea_" + index;
+			search_result_textarea.setAttribute("id", search_textarea_id);
+			search_result_textarea.classList.add("search_modal_search_result_textarea");
+			search_result_option.classList.add("search_modal_search_result_option");
+			search_result_option.append(search_code_snippet_button);
+			search_result_option.append(search_result_textarea);
+			// append
+			search_result_ele.append(small_url_text);
+			search_result_ele.append(title_url_text);
+			search_result_ele.append(desc_result_text);
+			search_result.append(search_result_ele);
+			search_result.append(search_result_option);
+			search_result_area.append(search_result);
+		});
+		var blank_row = document.createElement("br");
+		search_result_area.append(blank_row);
+		search_result_area.append(blank_row);
+		var page_offset_array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+		var page_offset_div   = document.createElement("div");
+		page_offset_div.classList.add("search_modal_page_offset");
+		page_offset_array.forEach(function(page_offset_i){
+			// 
+			var page_offset_ele = document.createElement("div");
+			page_offset_ele.innerText = page_offset_i + 1;
+			page_offset_ele.classList.add("search_modal_page_offset_ele");
+			page_offset_ele.onclick = function(e) {
+				onloading_search_result_area();
+				var search_keyword   = document.getElementsByClassName("searchForm")[1].value.replaceAll(" ", "");
+				search_qwant(e, search_keyword, page_offset_i);
+			}
+			page_offset_div.append(page_offset_ele);
+		});
+		search_result_area.append(page_offset_div);
+	}
+	// 
+	function display_ver2_mode(search_result_json, offset, search_keyword){
+		// とりあえず 2つ表示から始める ...
+		var get_code_snippet_original_url = "http://localhost:3000/get_code_data_from_url?page_url=";
+		var search_result_area = document.getElementById("search_modal_search_result_content");
+		search_result_area.innerHTML = "";
+		var search_result_elements = search_result_json["data"]["result"]["items"];
+		var displaying_result_elements = search_result_elements.slice(offset*2, 2);
+		// append change display mode
+		var change_display_mode_text   = document.createElement("p");
+		var change_display_mode_button = document.createElement("a");
+		change_display_mode_button.classList.add("search-btn");
+		change_display_mode_button.innerText = "表示変更"
+		change_display_mode_button.onclick = function(e){
+			display_ver1_mode(search_result_json, search_keyword);
+		}
+		change_display_mode_text.append(change_display_mode_button);
+		search_result_area.append(change_display_mode_text);
+		// display code snippet
+		displaying_result_elements.forEach(function(ele, index){
+			// get json data
+			var ele_url = ele["url"]; var ele_desc = ele["desc"].slice(0, 140);
+			var ele_title = ele["title"].slice(0, 57) + "...";
+			var get_code_snippet_url = get_code_snippet_original_url + ele_url;
+			// search result
+			var search_result_ver2 = document.createElement("div");
+			search_result_ver2.classList.add("search_modal_search_result_frame_ver2");
+			var search_result_ele = document.createElement("div");
+			search_result_ele.classList.add("search_modal_search_result_ele_ver2")
+			var small_url_text = document.createElement("a");
+			small_url_text.innerText = ele_url; small_url_text.href = ele_url;
+			small_url_text.style.fontSize = "7px"
+			var title_url_text = document.createElement("h4");
+			title_url_text.style.margin = "5px 0";
+			var title_url_href = document.createElement("a");
+			title_url_href.innerText = ele_title; title_url_href.href = ele_url;
+			title_url_text.append(title_url_href);
+			var desc_result_text = document.createElement("p");
+			desc_result_text.innerText = ele_desc;
+			desc_result_text.style.fontSize = "10px";
+			desc_result_text.style.margin  = "5px 0";
+			// append search result
+			search_result_area.append(search_result_ver2);
+			search_result_ele.append(small_url_text);
+			search_result_ele.append(title_url_text);
+			search_result_ele.append(desc_result_text);
+			search_result_ver2.append(search_result_ele);
+			// append editor
+			var textarea_ele_ver2 = document.createElement("textarea");
+			var textarea_ele_ver2_id = "textarea_ele_ver2_" + index;
+			search_result_ver2.append(textarea_ele_ver2);
+			textarea_ele_ver2.setAttribute("id", textarea_ele_ver2_id);
+			textarea_ele_ver2.classList.add("search_modal_search_result_textarea");
+			var codeSnippetVer2 = CodeMirror.fromTextArea(textarea_ele_ver2, {
+			    mode: "javascript",
+			    lineNumbers: true,
+			    indentUnit: 4
+			});
+			codeSnippetVer2.setSize(null, 300);
+			codeSnippetVer2.setValue("\nloading content ....");
+			var editor_ele = search_result_ver2.getElementsByClassName("CodeMirror")[0]
+			// get json
+			var code_snippet_hash = {}
+			$.getJSON(get_code_snippet_url, function(snippet_json){
+				code_snippet_hash = snippet_json;
+			}).then(function(){
+				var code_snippet_hash_keys = Object.keys(code_snippet_hash);
+				if ( code_snippet_hash_keys.length > 0 ) {
+					var code_snippet_first_content = code_snippet_hash[code_snippet_hash_keys[0]]["file_content"];
+					codeSnippetVer2.setValue(code_snippet_first_content);
+					// 
+					generate_code_snippet_footer(code_snippet_hash, codeSnippetVer2, textarea_ele_ver2_id, textarea_ele_ver2, editor_ele, search_result_ver2, search_keyword, ele_title, ele_url, true);
+				} else {
+					generate_code_snippet_footer(code_snippet_hash, codeSnippetVer2, textarea_ele_ver2_id, textarea_ele_ver2, editor_ele, search_result_ver2, search_keyword, ele_title, ele_url, false);
+				}
+			})
+		})
 	}
 	// 
 	function display_keyword_search_area(){

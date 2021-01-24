@@ -1,4 +1,6 @@
 // 
+// Todo
+//   > modal movable に
 function display_search_modal(){
 	var html_file_content; var js_script_content;
 	var modal_search_area = $("#modalSearchArea");
