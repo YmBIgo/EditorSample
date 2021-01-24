@@ -22,6 +22,7 @@ function display_search_modal(){
 		search_modal_wrapper.classList.add("modal_search_section");
 		var search_modal_div_wrapper = document.getElementsByTagName("body")[0].appendChild(search_modal_wrapper);
 		search_modal_wrapper.innerHTML = html_file_content;
+		document.getElementsByClassName("searchForm")[0].focus();
 		$("#modalSearchArea").fadeIn();
 		$(function (){
 			$('#modalBg').click(function(event){ /* closeModal */

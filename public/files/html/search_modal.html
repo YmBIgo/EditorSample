@@ -251,7 +251,7 @@
 		var search_result_area = document.getElementById("search_modal_search_result_content");
 		search_result_area.innerHTML = "";
 		var search_result_elements = search_result_json["data"]["result"]["items"];
-		var displaying_result_elements = search_result_elements.slice(offset*2, 2);
+		var displaying_result_elements = search_result_elements.slice(offset*2, offset*2 + 2);
 		// append change display mode
 		var change_display_mode_text   = document.createElement("p");
 		var change_display_mode_button = document.createElement("a");
@@ -262,6 +262,13 @@
 		}
 		change_display_mode_text.append(change_display_mode_button);
 		search_result_area.append(change_display_mode_text);
+		// prev link & next link
+		var prev_offset = offset - 1; var next_offset = offset + 1;
+		if ( prev_offset == -1 ) { prev_offset = 4 }
+		if ( next_offset == 5 )  { next_offset = 0 }
+		var page_prev_link = display_next_prev_offset_link(search_result_json, prev_offset, search_keyword, false);
+		var page_next_link = display_next_prev_offset_link(search_result_json, next_offset, search_keyword, true);
+		search_result_area.append(page_prev_link);
 		// display code snippet
 		displaying_result_elements.forEach(function(ele, index){
 			// get json data
@@ -302,7 +309,7 @@
 			    lineNumbers: true,
 			    indentUnit: 4
 			});
-			codeSnippetVer2.setSize(null, 300);
+			codeSnippetVer2.setSize(null, 240);
 			codeSnippetVer2.setValue("\nloading content ....");
 			var editor_ele = search_result_ver2.getElementsByClassName("CodeMirror")[0]
 			// get json
@@ -321,6 +328,22 @@
 				}
 			})
 		})
+		search_result_area.append(page_next_link);
+	}
+	function display_next_prev_offset_link(search_result_json, offset, search_keyword, is_next){
+		var page_tab_link = document.createElement("div");
+		page_tab_link.classList.add("search_modal_offset_link_ver2");
+		if ( is_next ) {
+			page_tab_link.style.marginLeft = "-1%";
+			page_tab_link.innerText = "＞";
+		} else {
+			page_tab_link.style.marginRight = "-1%";
+			page_tab_link.innerText = "＜";
+		}
+		page_tab_link.onclick = function(e) {
+			display_ver2_mode(search_result_json, offset, search_keyword);
+		}
+		return page_tab_link
 	}
 	// 
 	function display_keyword_search_area(){

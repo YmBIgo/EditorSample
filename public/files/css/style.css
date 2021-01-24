@@ -281,7 +281,8 @@
 	/* Search Result Display Version2 */
 .search_modal_search_result_frame_ver2 {
 	vertical-align: top;
-	width:45%; /* 41% とかにしておいて、左右の矢印つける */
+	width:41%; /* 41% とかにしておいて、左右の矢印つける */
+	height:450px;
 	display:inline-block;
 	border:1px rgba(45, 45, 45, .5) solid;
 	padding:10px;
@@ -293,6 +294,16 @@
 	width: 90%;
 	margin-top:10px;
 	margin-bottom:10px;
+}
+.search_modal_offset_link_ver2 {
+	vertical-align: top;
+	display: inline-block;
+	padding-top:220px;
+	height:250px;
+	width:3%;
+	margin:10px 0;
+	color:#eee;
+	background-color:rgba(45, 45, 45, .7);
 }
 
 /* Open folder */
