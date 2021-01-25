@@ -2,3 +2,4 @@ tempfiles/*
 files/*
 index/files/*
 lib/func/json_files/*
+lib/func/db/db_file/editor_sqlite.db

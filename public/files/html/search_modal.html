@@ -49,7 +49,15 @@
 		event.preventDefault();
 		if ( search_keyword == "" ) { search_form_button.value = "検索"; return false }
 		var search_result_json = {};
-		var search_qwant_url = "/search_qwant?keyword=" + search_keyword + "&page_offset=" + page_offset;
+		// 
+		var file_pos  	= fileEditor.getCursor()["ch"];
+		var file_line 	= fileEditor.getCursor()["line"];
+		if ( tabs.tab_array.length > 0 ) {
+			var file_name = tabs.tab_array[tabs.focus_file];
+		} else {
+			var file_name = "";
+		}
+		var search_qwant_url = "/search_qwant?keyword='" + search_keyword + "'&page_offset=" + page_offset + "&file_name=" + file_name + "&file_pos=" + file_pos + "&file_line=" + file_line;
 		console.log(search_qwant_url);
 		$.getJSON(search_qwant_url).success(function(json){
 			// 
@@ -364,7 +372,7 @@
 		display_keyword_search_area();
 	}
 	search_form_button.onclick = function(e) {
-		var search_keyword   = document.getElementsByClassName("searchForm")[0].value.replaceAll(" ", "");
+		var search_keyword   = document.getElementsByClassName("searchForm")[0].value; // .replaceAll(" ", "")
 		document.getElementsByClassName("searchForm")[1].value = search_keyword;
 		search_qwant(e, search_keyword, 0);
 		var main_search_area = document.getElementById("keyword_search_area");

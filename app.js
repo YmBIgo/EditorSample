@@ -1,18 +1,25 @@
 // 
+'use strict';
 var express = require("express");
-var app = express();
-// var fetch 	= require("node-fetch");
-var got 	= require("got");
-var load_file  = require("./lib/func/load_file");
+const app 	= express();
+const got 	= require("got");
+const sqlite3 	= require("sqlite3")
+var load_file   = require("./lib/func/load_file");
 var code_snippet_getter = require("./lib/func/code_snippet");
-var bodyParser = require("body-parser");
-// 
+var SqliteConnector 	= require("./lib/func/db/editor_sqlite.js");
+const bodyParser = require("body-parser");
+
+// init
 var all_file = new Array;
 var file_index_hash = new Map;
 var original_path;
 var index_page_file_name = "";
-// [all_file, file_index_hash] = load_file.read_files("./", 1, 1, [] ,0, 1);
+var db_callback;
+var sqlite3_cursor		 = new sqlite3.Database("./lib/func/db/db_file/editor_sqlite.db", db_callback);
+var sqlite_connection 	 = new SqliteConnector();
+sqlite_connection.set_db_cursor(sqlite3_cursor);
 
+// 
 var server = app.listen(3000, function(){
 	console.log("Node.js listen to" + server.address().port)
 });
@@ -85,10 +92,19 @@ app.post('/create_file', function(req, res, next){
 // Qwant
 app.get('/search_qwant', function(req, res, next){
 	// 
-	// axios とかも 検討
-	// 	 > URL 情報取得で Promise 使えるようになりたい
-	var keyword 	  = req.query.keyword;
+	// should add user authentication
+	var keyword 	  = req.query.keyword.replace(/\'/gi, "");
 	var page_offset   = req.query.page_offset;
+	var user_id 	  = req.query.user_id;
+	var file_name 	  = req.query.file_name;
+	var file_pos 	  = req.query.file_pos;
+	var file_line 	  = req.query.file_line;
+	var current_time  = new Date(); var current_time_string = current_time.toString();
+	// save search history
+	var default_search_history 	= sqlite_connection.default_search_history_cols();
+	var search_history_data		= { "project_id" : 1, "keyword" : keyword, "file_name" : file_name, "file_pos" : file_pos, "file_line" : file_line, "created_at" : current_time_string, "updated_at" : current_time_string };
+	sqlite_connection.insert_db_data_to_table(search_history_data, "search_histories", default_search_history);
+	// get search result
 	var qwant_url 	  = "https://api.qwant.com/api/search/web?count=10&offset=" + page_offset + "&q=" + keyword + "&language=german&t=web&uiv=1";
 	var response_result;
 	console.log(qwant_url);
