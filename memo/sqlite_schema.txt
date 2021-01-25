@@ -1,0 +1,27 @@
+[ Schema Sample ]
+
+* should use sqlite3 on windows environment
+
+  1 : User
+  	  - ID 			: INTEGER 		PRIMARY KEY AUTOINCREMENT
+  	  - EMAIL 		: VARCHAR(255)  UNIQUE
+  	  - FirstName 	: VARCHAR(255)
+  	  - LastName	: VARCHAR(255)
+  	  - BcryptoPass : VARCHAR(255)
+  	  - CreatedAt 	: DATETIME
+  	  - UpdatedAt 	: DATETIME
+  2 : Search_History
+  	  - ID 			  : INTEGER		PRIMARY KEY AUTOINCREMENT
+      - ProjectId : INTEGER
+  	  - Keyword  	: VARCHAR(255)
+  	  - FileName 	: VARCHAR(255)
+  	  - FilePos  	: INTEGER
+  	  - UserID 		: INTEGER
+  	  - CreatedAt	: DATETIME
+  	  - UpdatedAt : DATETIME
+  3 : Project
+      - ID        : INTEGER
+      - UserID    : INTEGER
+      - Name      : VARCHAR(255)
+      - FilePath  : VARCHAR(255)
+      - CreatedAt : DATETIME
