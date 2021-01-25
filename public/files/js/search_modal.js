@@ -43,7 +43,7 @@ function generate_search_code_snippet(code_content, search_keyword, page_title, 
 	// init
 	var old_search_code_snippet = document.getElementsByClassName("code-snippet-modal");
 	if ( old_search_code_snippet.length > 0 ) {
-		for ( var i = 0; i > old_search_code_snippet.length; i++ ) {
+		for ( var i = 0; i < old_search_code_snippet.length; i++ ) {
 			old_search_code_snippet[i].remove();
 		}
 	}
